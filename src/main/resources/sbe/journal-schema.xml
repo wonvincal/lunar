@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messageSchema package="com.lunar.journal.io.sbe"
+               id="1"
+               description="Lunar Journal"
+               byteOrder="littleEndian">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="groupSizeEncoding" semanticType="NumInGroup">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8"/>
+        </composite>
+        <composite name="varDataEncoding">
+            <type name="length" primitiveType="uint8"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+    </types>
+    <types>
+        <type name="Timestamp" primitiveType="uint64" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
+    </types>
+    <message name="JournalRecordSbe" id="100" description="Journal record">
+        <field name="seq" id="1" type="uint32"/>
+        <field name="timestamp" id="2" type="Timestamp"/>
+        <data name="payload" id="3" type="varDataEncoding" />
+    </message>
+    <message name="SnapshotRecordSbe" id="101" description="Snapshot record">
+        <field name="seq" id="1" type="uint32"/>
+        <field name="fileIndex" id="4" type="uint16"/>
+        <field name="recordSeq" id="5" type="uint32"/>
+        <field name="timestamp" id="2" type="Timestamp"/>
+        <data name="state" id="6" type="varDataEncoding" />
+    </message>
+ </messageSchema>

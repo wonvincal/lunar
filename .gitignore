@@ -1,0 +1,21 @@
+# compiled source
+*.class
+*.o
+*.so
+
+# eclipse files
+.classpath
+.project
+
+# folder
+.metadata
+.recommenders
+.settings
+.gradle
+bin/
+target/
+build/
+logs/
+aeron/
+journal/
+journal_archive/

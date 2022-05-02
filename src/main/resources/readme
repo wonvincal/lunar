@@ -1,0 +1,26 @@
+Install System
+==============
+1. Extract lunar.tar to another directory
+   tar xvf lunar.tar
+
+Start System
+============
+1. Go to lunar folder
+2. Check usage by running ./lunarSystem.sh 
+   ./lunarSystem.sh -c ~/dev/workspace/lunar/lunar/src/test/resources/config/simple/lunar.admin.conf -s tiger -p 12345 -l /prod/lunar/config/log4j2.xml
+3. Run ./lunarSystem.sh with appropriate arguments.
+   You can get a valid configuration file from src/test/resources/config/*
+
+Note: If you want to run this in cygwin, you need to convert the configuration file path to windows format
+./lunarSystem.sh -c `cygpath --mixed ~/dev/lunar/lunar/src/integrationTest/resources/config/it/simple/lunar.admin.true.strat.conf` -s tiger -p 8192
+
+Stop System
+===========
+1. Ctrl-C (or any way to send INT to the process)
+
+Extract Journal
+===============
+1. Go to lunar/bin folder
+2. Samples:
+    ./journalPrinter -p /tmp/journal20160830 -n perf -d 2016-08-30 --printer PERF_CSV -o /tmp/perf.csv
+    

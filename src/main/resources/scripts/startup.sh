@@ -1,0 +1,1 @@
+java lunar.jar -Dlunar.port=2551 -Dlunar.host=127.0.0.1 -Dconfig.resource=lunar.conf -Dlunar.system=tiger -Dlunar.aeron.dir="C:\\dev\\test\\lunar\\aeron\\test"

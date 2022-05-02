@@ -1,0 +1,1539 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messageSchema package="com.lunar.message.io.sbe" id="1"
+	description="Lunar Message" byteOrder="littleEndian">
+	<types>
+		<composite name="messageHeader"
+			description="Message identifiers and length of message root">
+			<type name="blockLength" primitiveType="uint16" />
+			<type name="templateId" primitiveType="uint16" />
+			<type name="schemaId" primitiveType="uint16" description="see if we can remove this for extra performance"/>
+			<type name="version" primitiveType="uint16" description="see if we can remove this for extra performance"/>
+		    <type name="seq" primitiveType="int32" />
+			<type name="senderSinkId" primitiveType="int8" minValue="0" maxValue="127" description="Use as a routing key by messenger (see if we can ignore these for all subscription data)" />
+			<type name="senderMessengerId" primitiveType="int8" minValue="0"
+				maxValue="127" description="A bit set identifying one of the 8 possible messengers within a service (0 represents the main messenger)" />
+			<type name="dstSinkId" primitiveType="int8" minValue="0" maxValue="127" description="Use as a routing key by messenger" />
+			<type name="dstMessengerSet" primitiveType="int8" minValue="0"
+				maxValue="127" description="A bit set representing destination of this message, can be a maximum of all eight messengers within a service  (0 represents the main messenger)" />
+			<type name="payloadLength" primitiveType="uint16" />
+		</composite>
+		<composite name="groupSizeEncoding" semanticType="NumInGroup">
+			<type name="blockLength" primitiveType="uint16" />
+			<type name="numInGroup" primitiveType="uint8" />
+		</composite>
+		<composite name="varDataEncoding">
+			<type name="length" primitiveType="uint8" />
+			<type name="varData" primitiveType="uint8" length="0" />
+		</composite>
+        <composite name="TriggerInfo"
+            description="trigger info for message tracking">
+            <type name="triggeredBy" id="10" primitiveType="int8" />
+            <type name="triggerSeqNum" id="12" primitiveType="int32" />
+            <type name="nanoOfDay" id="15" primitiveType="uint64" timeUnit="nanosecond" semanticType="UTCTimestamp" />
+        </composite>
+        <composite name="VerifiedDouble">
+            <type name="value" id="1" primitiveType="double" />
+            <type name="verified" id="1" primitiveType="int8" />
+        </composite>
+	</types>
+	<types>
+		<type name="Key" primitiveType="int32" />
+		<type name="Currency" length="3" primitiveType="char" />
+		<type name="Date" primitiveType="int32" semanticType="YYYYMMDD" />
+		<type name="Price" primitiveType="int32" />
+		<type name="Timestamp" primitiveType="uint64" timeUnit="nanosecond"
+			semanticType="UTCTimestamp" />
+		<type name="ShortString" primitiveType="char" length="4"
+			characterEncoding="UTF-8" />
+		<type name="MediumString" primitiveType="char" length="10"
+			characterEncoding="UTF-8" />
+		<type name="LongString" primitiveType="char" length="25"
+			characterEncoding="UTF-8" />
+        <type name="ExecutionId" primitiveType="char" length="21"
+            characterEncoding="UTF-8" />
+		<type name="ParameterValue" primitiveType="char" length="4"
+			characterEncoding="UTF-8" />
+		<type name="Reason" primitiveType="char" length="25"
+			characterEncoding="UTF-8" />
+		<enum name="SecurityType" encodingType="int8" semanticType="int8">
+			<validValue name="STOCK">0</validValue>
+			<validValue name="WARRANT">1</validValue>
+			<validValue name="CBBC">2</validValue>
+            <validValue name="INDEX">3</validValue>
+            <validValue name="FUTURES">4</validValue>
+		</enum>
+		<enum name="PutOrCall" encodingType="int8">
+			<validValue name="PUT">0</validValue>
+			<validValue name="CALL">1</validValue>
+		</enum>
+		<enum name="TradingSesStatus" encodingType="int8">
+		    <validValue name="UNKNOWN_FOR_NO">0</validValue>
+		    <validValue name="HALTED_FOR_BL_EI">1</validValue>
+		    <validValue name="OPEN_FOR_OI_NC_MA_CT_OC">2</validValue>
+		    <validValue name="CLOSED_FOR_CL">3</validValue>
+		    <validValue name="DAY_CLOSED_FOR_DC">100</validValue>
+		</enum>
+		<enum name="SessionStatus" encodingType="int8">
+		    <validValue name="SESSION_ACTIVE">0</validValue>
+		    <validValue name="INVALID_USERNAME_OR_IP_ADDRESS">5</validValue>
+		    <validValue name="USER_ALREADY_CONNECTED">100</validValue>
+		</enum>
+		<enum name="RetransStatus" encodingType="int8">
+		    <validValue name="REQUEST_ACCEPTED">0</validValue>
+		    <validValue name="UNKNOWN_UNAUTHORIZED_CHANNEL_ID">1</validValue>
+		    <validValue name="MESSAGES_NOT_AVAILABLE">2</validValue>
+		    <validValue name="EXCEEDS_MAXIMUM_SEQUENCE_RANGE">100</validValue>
+		    <validValue name="EXCEEDS_MAXIMUM_REQUESTS_IN_A_DAY">101</validValue>
+		</enum>
+		<enum name="ExecutionType" encodingType="int8" description="should revise to see if we need all these">
+		    <validValue name="NEW">0</validValue>
+		    <validValue name="TRADE">1</validValue>
+		    <validValue name="CANCEL">2</validValue>
+		    <validValue name="REJECT">3</validValue>
+		    <validValue name="EXPIRE">4</validValue>
+		    <validValue name="AMEND">5</validValue>
+		    <validValue name="TRADE_CANCEL">6</validValue>
+		    <validValue name="CANCEL_REJECT">7</validValue>
+		    <validValue name="AMEND_REJECT">8</validValue>
+		</enum>
+		<enum name="OrderAmendRejectType" encodingType="int8" description="Order amend reject code">
+			<validValue name="TOO_LATE_TO_CANCEL">0</validValue>
+			<validValue name="UNKNOWN_ORDER">1</validValue>
+			<validValue name="ORDER_ALREADY_IN_PENDING_CANCEL_OR_PENDING_REPLACE_STATUS">3</validValue>
+			<validValue name="DUPLICATE_CLIENT_ID_RECEIVED">6</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND">8</validValue>
+			<validValue name="OTHER">99</validValue>
+			<validValue name="REFERENCE_PRICE_IS_NOT_AVAILABLE">100</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND_OVERRIDE_NOT_ALLOWED">101</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND_OTHER">102</validValue>
+			<validValue name="NOTIONAL_VALUE_EXCEEDS_THRESHOLD">103</validValue>
+		</enum>
+		<enum name="OrderRequestRejectType" encodingType="int8" description="Order request reject code">
+			<validValue name="VALID_AND_NOT_REJECT">80</validValue>
+			<validValue name="INSUFFICIENT_LONG_POSITION">81</validValue>
+			<validValue name="CROSSED">82</validValue>
+			<validValue name="INVALID_PRICE">83</validValue>
+            <validValue name="ORDER_EXCEED_PURCHASING_POWER">84</validValue>
+			<validValue name="INCORRECT_QTY">13</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND">16</validValue>
+			<validValue name="REFERENCE_PRICE_IS_NOT_AVAILABLE">19</validValue>
+			<validValue name="NOTIONAL_VALUE_EXCEEDS_THRESHOLD">20</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND_OVERRIDE_NOT_ALLOWED">101</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND_OTHER">102</validValue>
+			<validValue name="TOO_LATE_TO_CANCEL">0</validValue>
+			<validValue name="UNKNOWN_ORDER">1</validValue>
+			<validValue name="ORDER_EXCEED_LIMIT_OR_ORDER_ALREADY_IN_PENDING_CANCEL_OR_PENDING_REPLACE_STATUS">3</validValue>
+			<validValue name="DUPLICATE_ORDER_OR_DUPLICATE_CLIENT_ID_RECEIVED">6</validValue>
+			<validValue name="RMS_INSUFFICIENT_LONG_POSITION_DIRECT_MAP">93</validValue>
+			<validValue name="EXCEED_UNDERLYING_THROTTLE">94</validValue>
+			<validValue name="TIMEOUT_BEFORE_THROTTLE">95</validValue>
+			<validValue name="TIMEOUT_AFTER_THROTTLED">96</validValue>
+            <validValue name="TIMEOUT">97</validValue>
+            <validValue name="THROTTLED">98</validValue>
+			<validValue name="OTHER">99</validValue>
+		</enum>
+		<enum name="OrderCancelRejectType" encodingType="int8" description="Order cancel reject code">
+			<validValue name="TOO_LATE_TO_CANCEL">0</validValue>
+			<validValue name="UNKNOWN_ORDER">1</validValue>
+			<validValue name="ORDER_ALREADY_IN_PENDING_CANCEL_OR_PENDING_REPLACE_STATUS">3</validValue>
+			<validValue name="DUPLICATE_CLIENT_ID_RECEIVED">6</validValue>
+			<validValue name="OTHER_INTERNALLY">98</validValue>
+			<validValue name="OTHER">99</validValue>
+		</enum>
+		<enum name="OrderRejectType" encodingType="int8" description="Order reject code">
+			<validValue name="ORDER_EXCEED_LIMIT">3</validValue>
+			<validValue name="DUPLICATE_ORDER">6</validValue>
+			<validValue name="INCORRECT_QTY">13</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND">16</validValue>
+			<validValue name="REFERENCE_PRICE_IS_NOT_AVAILABLE">19</validValue>
+			<validValue name="NOTIONAL_VALUE_EXCEEDS_THRESHOLD">20</validValue>
+            <validValue name="VALID_AND_NOT_REJECT">80</validValue>
+            <validValue name="INSUFFICIENT_LONG_POSITION">81</validValue>
+            <validValue name="CROSSED">82</validValue>
+            <validValue name="INVALID_PRICE">83</validValue>
+            <validValue name="ORDER_EXCEED_PURCHASING_POWER">84</validValue>
+			<validValue name="RMS_INSUFFICIENT_LONG_POSITION_DIRECT_MAP">93</validValue>
+			<validValue name="OTHER_INTERNALLY">98</validValue>
+			<validValue name="OTHER">99</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND_OVERRIDE_NOT_ALLOWED">101</validValue>
+			<validValue name="PRICE_EXCEEDS_CURRENT_PRICE_BAND_OTHER">102</validValue>
+		</enum>		
+		<enum name="OrderStatus" encodingType="int8" description="i don't think we need to have pending status, that is state instead of status.">
+			<validValue name="PENDING_NEW">0</validValue>
+			<validValue name="NEW">1</validValue>
+			<validValue name="PENDING_AMEND">2</validValue>
+			<validValue name="FILLED">3</validValue>
+			<validValue name="PENDING_CANCEL">4</validValue>
+			<validValue name="CANCELLED">5</validValue>
+			<validValue name="EXPIRED">6</validValue>
+			<validValue name="REJECTED">7</validValue>
+			<validValue name="FAILED">8</validValue>
+			<validValue name="PARTIALLY_FILLED">9</validValue>
+			<validValue name="THROTTLED">10</validValue>
+		</enum>
+		<enum name="TradeStatus" encodingType="int8" description="Synthetic status">
+			<validValue name="NEW">0</validValue>
+			<validValue name="CANCELLED">1</validValue>
+		</enum>
+		<enum name="TradingStatus" encodingType="int8">
+			<validValue name="INVALID">0</validValue>
+			<validValue name="PRE_OPEN">1</validValue>
+			<validValue name="TRADING_HALT">2</validValue>
+			<validValue name="READY_TO_TRADE">3</validValue>
+			<validValue name="CLOSE">4</validValue>
+			<validValue name="POST_CLOSE">5</validValue>
+			<validValue name="PRE_CROSS">6</validValue>
+			<validValue name="CROSS">7</validValue>
+		</enum>
+		<enum name="UpdateAction" encodingType="int8">
+			<validValue name="NEW">0</validValue>
+			<validValue name="CHANGE">1</validValue>
+			<validValue name="DELETE">2</validValue>
+			<validValue name="CLEAR">3</validValue>
+		</enum>
+		<enum name="EntryType" encodingType="int8" semanticType="int">
+			<validValue name="BID">0</validValue>
+			<validValue name="OFFER">1</validValue>
+		</enum>
+		<enum name="EventCategory" encodingType="int8">
+			<validValue name="CORE">0</validValue>
+			<validValue name="EXECUTION">1</validValue>
+			<validValue name="MARKET_DATA">2</validValue>
+			<validValue name="STRATEGY">3</validValue>
+			<validValue name="OTHER">4</validValue>
+		</enum>
+		<enum name="EventLevel" encodingType="int8">
+			<validValue name="OK">0</validValue>
+			<validValue name="INFO">1</validValue>
+			<validValue name="WARNING">2</validValue>
+			<validValue name="CRITICAL">3</validValue>			
+		</enum>
+		<enum name="EventType" encodingType="int8">
+			<validValue name="THROTTLED">1</validValue>
+			<validValue name="ORDER_VALIDATION">2</validValue>
+            <validValue name="ORDER_EXPLAIN">3</validValue>
+            <validValue name="TO_MAKING_SIGNAL">4</validValue>
+            <validValue name="VOL_DOWN_SIGNAL">5</validValue>
+            <validValue name="VOL_UP_SIGNAL">6</validValue>
+            <validValue name="CONNECTION">7</validValue>
+		</enum>
+        <enum name="EventValueType" encodingType="int8">
+            <validValue name="ANY">0</validValue>
+            <validValue name="SECURITY_SID">1</validValue>
+            <validValue name="PREV_UNDERLYING_BID">2</validValue>
+            <validValue name="PREV_UNDERLYING_ASK">3</validValue>
+            <validValue name="UNDERLYING_BID">4</validValue>
+            <validValue name="UNDERLYING_ASK">5</validValue>
+            <validValue name="PREV_WARRANT_BID">6</validValue>
+            <validValue name="PREV_WARRANT_ASK">7</validValue>
+            <validValue name="WARRANT_BID">8</validValue>
+            <validValue name="WARRANT_ASK">9</validValue>
+            <validValue name="VELOCITY">10</validValue>
+            <validValue name="DELTA">11</validValue>
+            <validValue name="ORDER_SID">12</validValue>
+            <validValue name="STRATEGY_EXPLAIN">13</validValue>
+            <validValue name="WARRANT_SPREAD">14</validValue>
+            <validValue name="TICK_SENSITIVITY">15</validValue>
+            <validValue name="HIGH_WARRANT_BID">16</validValue>
+            <validValue name="BEST_SPOT">17</validValue>
+            <validValue name="WAVG_SPOT">18</validValue>
+            <validValue name="PREV_WAVG_SPOT">19</validValue>
+            <validValue name="BUCKET_SIZE">20</validValue>
+            <validValue name="BUCKET_VIOLATION_TYPE">21</validValue>
+            <validValue name="TURNOVER_PRICE">22</validValue>
+            <validValue name="HAS_POSITION">23</validValue>
+            <validValue name="SIDE">24</validValue>
+            <validValue name="PRICING_MODE">25</validValue>
+            <validValue name="GENERIC_EVENT_FLAGS">26</validValue>
+        </enum>
+        <enum name="StrategyExplainType" encodingType="int8">
+            <validValue name="STOCK_WIDESPREAD_BUY_SIGNAL">1</validValue>
+            <validValue name="STOCK_TIGHTSPREAD_BUY_SIGNAL">2</validValue>
+            <validValue name="STOP_LOSS_SELL_SIGNAL">3</validValue>
+            <validValue name="PROFIT_RUN_SELL_SIGNAL">4</validValue>
+            <validValue name="EXIT_STRATEGY_SELL_SIGNAL">5</validValue>
+            <validValue name="USER_CAPTURE_PROFIT_SIGNAL">6</validValue>
+            <validValue name="PREDICTION_BY_WAVG_BUCKET_BUY_SIGNAL">7</validValue>
+            <validValue name="PREDICTION_BY_WAVG_SPOT_BUY_SIGNAL">8</validValue>
+            <validValue name="PREDICTION_BY_BID_BUCKET_BUY_SIGNAL">9</validValue>
+            <validValue name="ISSUER_DOWN_VOL_SELL_SIGNAL">10</validValue>
+            <validValue name="TO_MAKING_SELL_SIGNAL">11</validValue>
+            <validValue name="STOP_PROFIT_SELL_SIGNAL">12</validValue>
+            <validValue name="NON_ISSUER_BID_SELL_SIGNAL">13</validValue>
+            <validValue name="USER_PLACE_SELL_ORDER_SIGNAL">14</validValue>
+            <validValue name="QUICK_PROFIT_SELL_SIGNAL">15</validValue>
+            <validValue name="LARGE_OUTSTANDING_SELL_SIGNAL">16</validValue>
+            <validValue name="CLOSING_PROFIT_RUN_SELL_SIGNAL">17</validValue>
+            <validValue name="DELTA_LIMIT_SELL_SIGNAL">18</validValue>
+        </enum>
+        <enum name="MarketOutlookType" encodingType="int8">
+            <validValue name="BULLISH">1</validValue>
+            <validValue name="BEARISH">2</validValue>
+            <validValue name="NORMAL">3</validValue>
+        </enum>
+		<enum name="TickDirection" encodingType="int8" semanticType="int">
+			<validValue name="PLUS_TICK">0</validValue>
+			<validValue name="MINUS_TICK">1</validValue>
+		</enum>
+		<enum name="OptionStyle" encodingType="int8" semanticType="char">
+			<validValue name="AMERICAN">0</validValue>
+			<validValue name="EUROPEAN">1</validValue>
+			<validValue name="ASIAN">2</validValue>
+		</enum>
+		<enum name="OrderType" encodingType="char">
+			<validValue name="MARKET_ORDER">1</validValue>
+			<validValue name="LIMIT_ORDER">2</validValue>
+			<validValue name="STOP_ORDER">3</validValue>
+			<validValue name="STOP_LIMIT_ORDER">4</validValue>
+            <validValue name="ENHANCED_LIMIT_ORDER">5</validValue>
+			<validValue name="MARKET_LIMIT_ORDER">K</validValue>
+			<validValue name="LIMIT_THEN_CANCEL_ORDER">X</validValue>
+		</enum>
+		<enum name="Side" encodingType="int8" description="do not change the values, it will be directly used as array index">
+			<validValue name="BUY">0</validValue>
+			<validValue name="SELL">1</validValue>
+		</enum>
+		<enum name="TimeInForce" encodingType="int8" presence="optional"
+			nullValue="0">
+			<validValue name="DAY">0</validValue>
+			<validValue name="GOOD_TILL_CANCEL">1</validValue>
+			<validValue name="FILL_AND_KILL">3</validValue>
+			<validValue name="GOOD_TILL_DATE">6</validValue>
+		</enum>
+		<enum name="TradeType" encodingType="int16">
+			<validValue name="AUTOMATCH_NORMAL">0</validValue>
+			<validValue name="LATE_TRADE">4</validValue>
+			<validValue name="NON_DIRECT_OFF_EXCHANGE_TRADE">22</validValue>
+			<validValue name="AUTOMATCH_INTERNALIZED">100</validValue>
+			<validValue name="DIRECT_OFF_EXCHANGE_TRADE">101</validValue>
+			<validValue name="ODD_LOT_TRADE">102</validValue>
+			<validValue name="AUCTION_TRADE">103</validValue>
+			<validValue name="OVERSEAS_TRADE">104</validValue>
+		</enum>
+		<enum name="TimerEventType" encodingType="int8">
+			<validValue name="INVALID">0</validValue>
+			<validValue name="STABILIZED">1</validValue>
+			<validValue name="SUBSCRIPTION">2</validValue>
+			<validValue name="GET">3</validValue>
+			<validValue name="REQUEST_TIMEOUT">4</validValue>
+			<validValue name="REQUEST_RETRY_DELAY_TIMEOUT">5</validValue>
+			<validValue name="COMMAND_TIMEOUT">6</validValue>
+			<validValue name="TIMER">7</validValue>
+		</enum>
+		<enum name="CommandType" encodingType="int8">
+			<validValue name="NA">0</validValue>
+			<validValue name="INIT">1</validValue>
+			<validValue name="START">2</validValue>
+			<validValue name="STOP">3</validValue>
+			<validValue name="SEND_ECHO">4</validValue>
+			<validValue name="GATHER_PERF_STAT">5</validValue>
+			<validValue name="WARMUP">6</validValue>
+			<validValue name="LINE_HANDLER_ACTION">7</validValue>
+            <validValue name="REFRESH">8</validValue>
+            <validValue name="EVALUATE_STATE">9</validValue>
+            <validValue name="RESET">10</validValue>
+            <validValue name="CAPTURE_PROFIT">11</validValue>
+            <validValue name="START_TEST_MODE">12</validValue>
+            <validValue name="STOP_TEST_MODE">13</validValue>
+            <validValue name="SEND_STRAT_PARAMS">14</validValue>
+            <validValue name="PLACE_SELL_ORDER">15</validValue>
+            <validValue name="PRINT_ORDER_INFO_IN_LOG">16</validValue>
+            <validValue name="PRINT_ALL_ORDER_INFO_IN_LOG">17</validValue>
+		</enum>
+		<enum name="RequestType" encodingType="int8">
+			<validValue name="CREATE">0</validValue>
+			<validValue name="GET">1</validValue>
+			<validValue name="SUBSCRIBE">6</validValue>
+			<validValue name="UNSUBSCRIBE">7</validValue>
+			<validValue name="REGISTER">8</validValue>
+			<validValue name="UNREGISTER">9</validValue>
+			<validValue name="ECHO">10</validValue>
+			<validValue name="GET_PERF_STAT">11</validValue>
+			<validValue name="GET_SYSTEM_STATUS">12</validValue>
+			<validValue name="UPDATE">13</validValue>
+			<validValue name="GET_AND_SUBSCRIBE">14</validValue>
+		</enum>
+		<enum name="ResultType" encodingType="int8">
+			<validValue name="OK">0</validValue>
+			<validValue name="FAILED">1</validValue>
+			<validValue name="UNSUPPORTED_OPERATION">2</validValue>
+            <validValue name="ILLEGAL_ARGUMENT_OPERATION">3</validValue>
+            <validValue name="TIMEOUT">4</validValue>
+		</enum>
+		<enum name="OrderRequestCompletionType" encodingType="int8">
+			<validValue name="OK">0</validValue>
+			<validValue name="FAILED">1</validValue>
+            <validValue name="REJECTED_INTERNALLY">2</validValue>
+			<validValue name="ALREADY_IN_PENDING_CANCEL">3</validValue>
+			<validValue name="ALREADY_IN_PENDING_AMEND">4</validValue>
+			<validValue name="REJECTED">5</validValue>
+		</enum>
+		<enum name="ReasonType" encodingType="int8">
+			<validValue name="MISSING">0</validValue>
+			<validValue name="INVALID">1</validValue>
+			<validValue name="DUPLICATE">2</validValue>
+			<validValue name="NOT_SUPPORTED">3</validValue>
+		</enum>
+		<enum name="ParameterType" encodingType="int8">
+			<validValue name="BOUND">0</validValue>
+			<validValue name="BROADCAST_FREQ">1</validValue>
+			<validValue name="ENTITY_TYPE">2</validValue>
+			<validValue name="EXCHANGE_CODE">3</validValue>
+			<validValue name="EXCHANGE_SID">4</validValue>
+			<validValue name="SECURITY_SID">5</validValue>
+			<validValue name="ORIGIN">6</validValue>
+			<validValue name="OPTION_TYPE">7</validValue>
+			<validValue name="RIC">8</validValue>
+			<validValue name="STRATEGY_ID">9</validValue>
+			<validValue name="SECURITY_CODE">10</validValue>
+			<validValue name="SECURITY_TYPE">11</validValue>
+			<validValue name="UNDERLYING_SECURITY_SID">12</validValue>
+			<validValue name="UNDERLYING_SECURITY_CODE">13</validValue>
+			<validValue name="WAIT_IN_MS">14</validValue>
+			<validValue name="SERVICE_TYPE">15</validValue>
+			<validValue name="ECHO_REMAINING">16</validValue>
+			<validValue name="TEMPLATE_TYPE">17</validValue>
+			<validValue name="SINK_ID">18</validValue>
+			<validValue name="DATA_TYPE">19</validValue>
+			<validValue name="LINE_HANDLER_ACTION_TYPE">20</validValue>
+			<validValue name="PARAM_ID">21</validValue>
+			<validValue name="PARAM_VALUE">22</validValue>
+			<validValue name="PURCHASING_POWER">23</validValue>
+			<validValue name="CHANNEL_ID">24</validValue>
+			<validValue name="PORTFOLIO_SID">25</validValue>
+            <validValue name="ISSUER_SID">26</validValue>
+            <validValue name="CHANNEL_SEQ">27</validValue>
+            <validValue name="ENTITY_SID">28</validValue>
+            <validValue name="DESCRIPTION">29</validValue>
+            <validValue name="IS_DELETED">30</validValue>
+            <validValue name="IS_ARCHIVED">31</validValue>
+            <validValue name="NOTE_SID">32</validValue>
+            <validValue name="WINDOW_SIZE_IN_SEC">33</validValue>
+            <validValue name="SIDE">34</validValue>
+            <validValue name="QUANTITY">35</validValue>
+            <validValue name="PRICE">36</validValue>
+            <validValue name="FROM_TIME">37</validValue>
+            <validValue name="TO_TIME">38</validValue>
+            <validValue name="STRATEGY_SWITCH_TYPE">39</validValue>
+            <validValue name="CLIENT_ORDER_ID">40</validValue>
+		</enum>
+		<enum name="DataType" encodingType="int8">
+			<validValue name="ALL_ORDER_AND_TRADE_UPDATE">1</validValue>
+			<validValue name="TRADE_UPDATE">2</validValue>
+			<validValue name="ALL_POSITION_UPDATE">3</validValue>
+			<validValue name="PORTFOLIO_POSITION_UPDATE">4</validValue>
+			<validValue name="ALL_RISK_CONTROL_STATE_UPDATE">5</validValue>
+			<validValue name="ALL_RISK_CONTROL_STATE_UPDATE_IF_CHANGED">6</validValue>
+			<validValue name="PORTFOLIO_RISK_CONTROL_STATE_UPDATE">7</validValue>
+			<validValue name="ALL_EVENT">8</validValue>
+			<validValue name="ALL_SERVICE_STATUS">9</validValue>
+			<validValue name="ALL_SUPPORTED_WINDOW_SIZE">10</validValue>
+            <validValue name="VALIDATION_BOOK">11</validValue>
+		</enum>
+		<enum name="TemplateType" encodingType="int8">
+			<validValue name="MarketDataOrderBookUpdate">1</validValue>
+			<validValue name="AggregateOrderBookUpdate">2</validValue>
+			<validValue name="MarketDataTrade">3</validValue>
+			<validValue name="SECURITY">4</validValue>
+			<validValue name="TIMER_EVENT">5</validValue>
+			<validValue name="RISK_STATE">6</validValue>
+			<validValue name="COMMAND">7</validValue>
+			<validValue name="COMMAND_RESULT">8</validValue>
+			<validValue name="Request">9</validValue>
+			<validValue name="RESPONSE">10</validValue>
+			<validValue name="RegisterResponse">11</validValue>
+			<validValue name="InvalidMessageNotification">12</validValue>
+			<validValue name="Echo">13</validValue>
+			<validValue name="ContextUpdate">14</validValue>
+			<validValue name="EXCHANGE">15</validValue>
+			<validValue name="SERVICE_STATUS">16</validValue>
+			<validValue name="ORDER">18</validValue>
+            <validValue name="STRATEGYTYPE">50</validValue>
+            <validValue name="STRATPARAMUPDATE">52</validValue>
+            <validValue name="STRATUNDPARAMUPDATE">53</validValue>
+            <validValue name="STRATWRTPARAMUPDATE">54</validValue>
+            <validValue name="TRADE">60</validValue>
+            <validValue name="StrategySwitch">61</validValue>
+            <validValue name="ISSUER">62</validValue>
+            <validValue name="POSITION">63</validValue>
+            <validValue name="RISK_CONTROL">64</validValue>
+            <validValue name="BOOBS">65</validValue>
+            <validValue name="MARKETSTATUS">66</validValue>
+            <validValue name="GENERIC_TRACKER">67</validValue>
+			<validValue name="STRATISSUERPARAMUPDATE">68</validValue>
+            <validValue name="EVENT">69</validValue>
+            <validValue name="DIVIDEND_CURVE">70</validValue>
+            <validValue name="GREEKS">71</validValue>
+            <validValue name="ORDERBOOK_SNAPSHOT">72</validValue>
+            <validValue name="MARKET_STATS">75</validValue>
+            <validValue name="SCOREBOARD_SCHEMA">77</validValue>
+            <validValue name="SCOREBOARD">78</validValue>
+            <validValue name="NOTE">79</validValue>
+            <validValue name="CHART_DATA">80</validValue>
+            <validValue name="STRAT_ISSUER_UND_PARAM_UPDATE">81</validValue>
+		</enum>
+		<enum name="ServiceType" encodingType="int8">
+			<validValue name="RefDataService">1</validValue>
+			<validValue name="StrategyService">2</validValue>
+			<validValue name="MarketDataService">3</validValue>
+			<validValue name="OrderManagementAndExecutionService">4</validValue>
+			<validValue name="AdminService">5</validValue>
+			<validValue name="EchoService">6</validValue>
+			<validValue name="AeronService">7</validValue>
+			<validValue name="PerformanceService">8</validValue>
+			<validValue name="DeadLetterService">9</validValue>
+			<validValue name="DashboardService">10</validValue>
+			<validValue name="PortfolioAndRiskService">11</validValue>
+			<validValue name="MarketDataRefreshService">12</validValue>
+			<validValue name="MarketDataSnapshotService">13</validValue>
+			<validValue name="LineHandler">14</validValue>
+			<validValue name="ClientService">15</validValue>
+			<validValue name="ExchangeService">16</validValue>
+			<validValue name="OrderAndTradeSnapshotService">17</validValue>
+            <validValue name="PersistService">18</validValue>
+            <validValue name="NotificationService">19</validValue>
+            <validValue name="WarmupService">20</validValue>
+            <validValue name="PricingService">21</validValue>
+            <validValue name="PingService">22</validValue>
+            <validValue name="PongService">23</validValue>
+            <validValue name="ScoreBoardService">24</validValue>
+            <validValue name="DashboardStandAloneWebService">25</validValue>
+		</enum>
+		<enum name="BooleanType" encodingType="int8">
+			<validValue name="FALSE">0</validValue>
+			<validValue name="TRUE">1</validValue>
+		</enum>
+		<enum name="ContextType" encodingType="int8">
+			<validValue name="MessagingContext">0</validValue>
+			<validValue name="MessageFactory">1</validValue>
+			<validValue name="ServiceConfig">2</validValue>
+		</enum>
+		<enum name="CommandAckType" encodingType="int8">
+			<validValue name="OK">0</validValue>
+			<validValue name="NOT_SUPPORTED">1</validValue>
+			<validValue name="TIMEOUT">2</validValue>
+			<validValue name="INVALID_PARAMETER">3</validValue>
+			<validValue name="FAILED">4</validValue>
+		</enum>
+		<enum name="ServiceStatusType" encodingType="int8">
+			<validValue name="UP">0</validValue>
+			<validValue name="DOWN">1</validValue>
+			<validValue name="INITIALIZING">2</validValue>
+			<validValue name="WARMING_UP">3</validValue>
+			<validValue name="HEARTBEAT">4</validValue>
+		</enum>
+		<enum name="LineHandlerActionType" encodingType="int8" description="Put all actions here">
+			<validValue name="CHANGE_MODE_ACCEPT_ON_NEW">0</validValue>
+			<validValue name="CHANGE_MODE_REJECT_ON_NEW">1</validValue>
+			<validValue name="CHANGE_MODE_ACCEPT_ON_CANCEL">2</validValue>
+			<validValue name="CHANGE_MODE_REJECT_ON_CANCEL">3</validValue>
+			<validValue name="FILL_ALL_LIVE_ORDERS">4</validValue>
+			<validValue name="PARTIAL_FILL_ALL_LIVE_ORDERS">5</validValue>
+			<validValue name="EXPIRE_ALL_LIVE_ORDERS">6</validValue>
+			<validValue name="CANCEL_ALL_TRADES">7</validValue>
+			<validValue name="RESET">8</validValue>
+            <validValue name="CHANGE_MODE_MATCH_ON_NEW">9</validValue>
+            <validValue name="CHANGE_MODE_MATCH_WITH_MULTI_FILLS_ON_NEW">10</validValue>
+            <validValue name="CHANGE_MODE_PARTIAL_MATCH_ON_NEW">11</validValue>
+            <validValue name="CHANGE_MODE_PARTIAL_MATCH_WITH_MULTI_FILLS_ON_NEW">12</validValue>
+		</enum>
+        <enum name="StrategyStatusType" encodingType="int8">
+            <validValue name="OFF">0</validValue>
+            <validValue name="ACTIVE">1</validValue>
+            <validValue name="IDLE">2</validValue>
+            <validValue name="STRATEGY_EXITING">3</validValue>
+            <validValue name="PRICE_CHECK_EXITING">4</validValue>
+            <validValue name="NO_CHECK_EXITING">5</validValue>
+            <validValue name="SEMI_MANUAL_EXITING">6</validValue>
+            <validValue name="CLOSING_STRATEGY_EXITING">7</validValue>
+            <validValue name="CLOSING_PRICE_CHECK_EXITING">8</validValue>
+            <validValue name="ALLOW_SELL_ON_WIDE_SPREAD">9</validValue>
+            <validValue name="ERROR">10</validValue>
+            <validValue name="SCOREBOARD_EXITING">11</validValue>
+        </enum>
+        <enum name="StrategyParamSource" encodingType="int8">
+            <validValue name="STRATEGY_ID">0</validValue>
+            <validValue name="SECURITY_SID">1</validValue>
+            <validValue name="UNDERLYING_SECURITY_SID">2</validValue>
+            <validValue name="ISSUER_SID">3</validValue>
+        </enum>
+        <enum name="StrategyParamType" encodingType="int8">
+            <validValue name="STRING">1</validValue>
+            <validValue name="LONG">2</validValue>
+        </enum>
+        <enum name="StrategySwitchType" encodingType="int8">
+            <validValue name="UNKNOWN">0</validValue>
+            <validValue name="STRATEGY_PERSIST">1</validValue>
+            <validValue name="STRATEGY_DAY_ONLY">2</validValue>
+            <validValue name="SCOREBOARD_PERSIST">3</validValue>
+            <validValue name="SCOREBOARD_DAY_ONLY">4</validValue>
+        </enum>
+        <enum name="GenericFieldType" encodingType="int8">
+            <validValue name="UNKNOWN">0</validValue>
+            <validValue name="BOOLEAN">1</validValue>
+            <validValue name="LONG">2</validValue>
+            <validValue name="NANOSECOND">3</validValue>
+            <validValue name="DECIMAL3">4</validValue>
+            <validValue name="DECIMAL5">5</validValue>
+            <validValue name="DECIMAL6">6</validValue>
+        </enum>
+        <enum name="EntityType" encodingType="int8">
+        	<validValue name="SECURITY">1</validValue>
+        	<validValue name="ISSUER">2</validValue>
+        	<validValue name="UNDERLYING">3</validValue>
+        	<validValue name="FIRM">4</validValue>
+        	<validValue name="PORTFOLIO">5</validValue>
+        </enum>
+        <enum name="RiskControlType" encodingType="int8">
+        	<validValue name="MAX_PROFIT">1</validValue>
+        	<validValue name="MAX_LOSS">2</validValue>
+        	<validValue name="MAX_OPEN_POSITION">3</validValue>
+        	<validValue name="MAX_CAP_LIMIT">4</validValue>
+        </enum>
+        <enum name="MarketStatusType" encodingType="int8">A
+            <validValue name="OI">1</validValue>
+            <validValue name="NC">2</validValue>
+            <validValue name="MA">3</validValue>
+            <validValue name="BL">4</validValue>
+            <validValue name="CT">5</validValue>
+            <validValue name="EI">6</validValue>
+            <validValue name="CL">7</validValue>
+            <validValue name="OC">8</validValue>
+            <validValue name="DC">9</validValue>
+        </enum>
+        <enum name="TrackerStepType" encodingType="int8">
+            <validValue name="RECEIVED_RAWMARKETDATA">1</validValue>
+            <validValue name="SENDING_MARKETDATA">2</validValue>
+            <validValue name="RECEIVED_MARKETDATA">3</validValue>
+            <validValue name="PROCESSED_MARKETDATA">4</validValue>
+            <validValue name="SENDING_NEWORDERREQUEST">5</validValue>
+            <validValue name="RECEIVED_NEWORDERREQUEST">6</validValue>
+            <validValue name="SENDING_ORDER">7</validValue>
+            <validValue name="RECEIVED_EXECUTIONREPORT">8</validValue>
+            <validValue name="RECEIVED_ORDERACCEPT">9</validValue>
+        </enum>
+        <enum name="StrategyExitMode" encodingType="int8">
+            <validValue name="NO_EXIT">1</validValue>
+            <validValue name="STRATEGY_EXIT">2</validValue>
+            <validValue name="PRICE_CHECK_EXIT">3</validValue>
+            <validValue name="NO_CHECK_EXIT">4</validValue>
+            <validValue name="SEMI_MANUAL_EXIT">5</validValue>
+            <validValue name="CLOSING_STRATEGY_EXIT">6</validValue>
+            <validValue name="CLOSING_PRICE_CHECK_EXIT">7</validValue>
+            <validValue name="ERROR">8</validValue>
+            <validValue name="SCOREBOARD_EXIT">9</validValue>
+        </enum>
+        <enum name="PricingMode" encodingType="int8">
+            <validValue name="UNKNOWN">1</validValue>
+            <validValue name="MID">2</validValue>
+            <validValue name="WEIGHTED">3</validValue>
+            <validValue name="ADJUSTVOL">4</validValue>
+        </enum>
+        <enum name="StrategyTriggerType" encodingType="int8">
+            <validValue name="VELOCITY_5MS">1</validValue>
+            <validValue name="VELOCITY_10MS">2</validValue>
+            <validValue name="ALLOW_ALL">3</validValue>
+        </enum>
+        <enum name="SpreadState" encodingType="int8">
+            <validValue name="NORMAL">1</validValue>
+            <validValue name="WIDE">2</validValue>
+            <validValue name="TOO_WIDE">3</validValue>
+        </enum>
+        <enum name="IssuerResponseType" encodingType="int8">
+            <validValue name="UNKNOWN">1</validValue>
+            <validValue name="TIGHT">2</validValue>
+            <validValue name="WIDE">3</validValue>
+            <validValue name="HOLD_BID_AT_BREAKEVEN">4</validValue>
+            <validValue name="HOLD_BID_AT_LOSS">5</validValue>
+        </enum>
+        <enum name="VolumeClusterDirectionType" encodingType="int8">
+            <validValue name="UNKNOWN">0</validValue>
+            <validValue name="UP">1</validValue>
+            <validValue name="DOWN">2</validValue>
+            <validValue name="NEUTRAL">3</validValue>
+        </enum>
+        <enum name="VolumeClusterType" encodingType="int8">
+            <validValue name="NORMAL">0</validValue>
+            <validValue name="HIGH">1</validValue>
+            <validValue name="POC">2</validValue>
+        </enum>
+	</types>
+	<message name="PingSbe" id="15"
+		description="ping and record latency between hops">
+		<field name="isResponse" id="54" type="BooleanType" />
+		<field name="startTime" id="15" type="Timestamp" />
+		<group name="timestamps" id="58">
+			<field name="timestamp" id="15" type="Timestamp" />
+			<field name="sinkId" id="56" type="int8" />
+		</group>
+	</message>
+	<message name="EchoSbe" id="13" description="Test message">
+		<field name="key" id="36" type="Key" />
+		<field name="isResponse" id="54" type="BooleanType" />
+		<field name="startTime" id="15" type="Timestamp" />
+	</message>
+	<message name="SandboxSbe" id="73" description="Dump things here to trigger generation of sbe">
+        <field name="dataType" id="0" type="DataType" semanticType="DataType" />
+        <field name="lineHandlerActionType" id="0" type="LineHandlerActionType" semanticType="LineHandlerActionType" />
+        <field name="orderRequestRejectType" id="0" type="OrderRequestRejectType" semanticType="OrderRequestRejectType" />
+        <field name="strategyExplainType" id="0" type="StrategyExplainType" semanticType="StrategyExplainType" />
+        <field name="templateType" id="0" type="TemplateType" semanticType="TemplateType" />
+        <field name="serviceType" id="0" type="ServiceType" semanticType="ServiceType" />
+        <field name="strategyExitMode" id="0" type="StrategyExitMode" semanticType="StrategyExitMode" />
+        <field name="marketOutlookType" id="0" type="MarketOutlookType" semanticType="MarketOutlookType" />
+        <field name="pricingMode" id="0" type="PricingMode" semanticType="PricingMode" />
+        <field name="stratUndSignalType" id="0" type="StrategyTriggerType" semanticType="StrategyTriggerType" />
+        <field name="spreadState" id="0" type="SpreadState" semanticType="SpreadState" />
+        <field name="issuerResponseType" id="0" type="IssuerResponseType" semanticType="IssuerResponseType" />
+	</message>
+	<message name="HeartbeatSbe" id="0" description="Heartbeat (Need a message to reference TemplateType)">
+        <field name="nanoOfDay" id="15" type="Timestamp" />
+	</message>
+	<message name="MarketDataOrderBookUpdateSbe" id="1"
+		description="Market Data Add Order (Full Tick)">
+		<field name="secSid" id="1" type="int64" semanticType="Id" />
+		<field name="orderId" id="2" type="uint64" semanticType="Id" />
+        <field name="seqNum" id="28" type="int32" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+		<field name="price" id="3" type="int32" />
+		<field name="tickLevel" id="3" type="int32" />
+		<field name="quantity" id="4" type="int64" />
+		<field name="entryType" id="5" type="EntryType" />
+		<field name="orderType" id="6" type="OrderType" />
+	</message>
+	<message name="AggregateOrderBookUpdateSbe" id="2"
+		description="Aggregate Order Book Update">
+		<field name="secSid" id="1" type="int64" semanticType="Id" />		
+        <field name="seqNum" id="28" type="int32" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+        <field name="isSnapshot" id="29" type="BooleanType" />
+		<group name="entry" id="8">
+			<field name="transactTime" id="9" type="Timestamp" />
+			<field name="price" id="3" type="int32" />
+            <field name="tickLevel" id="3" type="int32" />
+			<field name="quantity" id="4" type="int64" />
+			<field name="numOrders" id="10" type="int32" />
+			<field name="entryType" id="5" type="EntryType" />
+			<field name="priceLevel" id="11" type="int8" />
+            <field name="side" id="63" type="Side" />
+			<field name="updateAction" id="12" type="UpdateAction" />
+		</group>
+	</message>
+	<message name="MarketDataTradeSbe" id="3">
+		<field name="secSid" id="1" type="int64" semanticType="Id" />
+		<field name="price" id="3" type="Price" semanticType="Price" />
+		<field name="quantity" id="4" type="int32" semanticType="Qty" />
+		<field name="tradeType" id="14" type="TradeType" />
+		<field name="tradeTime" id="15" type="Timestamp" />
+        <field name="isRecovery" id="31" type="BooleanType" />
+        <field name="numActualTrades" id="31" type="int32" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+	</message>
+	<message name="ExchangeSbe" id="24">
+		<field name="lastUpdateSeq" id="16" type="int32" />
+		<field name="sid" id="17" type="int32" />
+		<field name="code" id="18" type="ShortString" />
+		<field name="name" id="18" type="MediumString" />
+        <field name="mdsSinkId" id="30" type="int32" />
+        <field name="mdsssSinkId" id="30" type="int32" />
+        <field name="omesSinkId" id="30" type="int32" />
+	</message>
+    <message name="IssuerSbe" id="62">
+        <field name="lastUpdateSeq" id="16" type="int32" />
+        <field name="lastUpdateTime" id="16" type="Timestamp" />
+        <field name="sid" id="1" type="int32" semanticType="Id" />
+        <field name="code" id="18" type="ShortString" />
+        <field name="name" id="19" type="MediumString" />
+    </message>
+	<message name="SecuritySbe" id="4" description="Security Definition">
+		<field name="lastUpdateSeq" id="16" type="int32" />
+		<field name="lastUpdateTime" id="16" type="Timestamp" />
+		<field name="sid" id="1" type="int64" semanticType="Id" />
+		<field name="exchangeSid" id="17" type="int32" />
+		<field name="code" id="18" type="MediumString" />
+		<field name="securityType" id="19" type="SecurityType" />
+		<field name="spreadTableCode" id="20" type="int8" />
+		<field name="currency" id="21" type="Currency" />
+		<field name="lotSize" id="22" type="int32" />
+		<field name="previousClosingPrice" id="23" type="Price" />
+		<field name="listingDate" id="24" type="Date" />
+		<field name="conversionRatio" id="25" type="int32" />
+		<field name="strikePrice" id="26" type="int32" />
+		<field name="maturity" id="27" type="Date" />
+		<field name="putOrCall" id="28" type="PutOrCall" presence="optional" />
+		<field name="style" id="29" type="OptionStyle" />
+        <field name="barrier" id="30" type="int32" />
+		<field name="undSid" id="31" type="int64" />
+        <field name="issuerSid" id="33" type="int32" />
+        <field name="isAlgo" id="34" type="BooleanType" />
+        <field name="mdsSinkId" id="30" type="int32" />
+        <field name="mdsssSinkId" id="30" type="int32" />
+        <field name="omesSinkId" id="30" type="int32" />
+	</message>
+	<message name="TimerEventSbe" id="5" description="Timer Event">
+		<field name="clientKey" id="53" type="int32" description="seq of the message/event that this timer event is triggered for" />
+		<field name="timerEventType" id="59" type="TimerEventType" />
+		<field name="startTime" id="34" type="Timestamp" />
+		<field name="expiryTime" id="35" type="Timestamp" />
+	</message>
+	<message name="PositionSbe" id="63" description="Position">
+		<field name="channelId" id="71" type="int32" />
+	    <field name="channelSnapshotSeq" id="71" type="int64" />
+		<field name="entitySid" id="1" type="int64" />
+		<field name="entityType" id="1" type="EntityType" />
+		<field name="openPosition" id="1" type="int64" />
+		<field name="openCallPosition" id="1" type="int64" />
+		<field name="openPutPosition" id="1" type="int64" />
+		<field name="buyQty" id="1" type="int64" />
+		<field name="buyNotional" id="1" type="double" />
+		<field name="sellQty" id="1" type="int64" />
+		<field name="sellNotional" id="1" type="double" />
+		<field name="osBuyQty" id="1" type="int64" />
+		<field name="osBuyNotional" id="1" type="double" />
+		<field name="osSellQty" id="1" type="int64" />
+		<field name="osSellNotional" id="1" type="double" />
+		<field name="capUsed" id="1" type="double" />
+		<field name="maxCapUsed" id="1" type="double" />
+		<field name="fees" id="1" type="double" />
+		<field name="commission" id="1" type="double" />
+		<field name="netRealizedPnl" id="1" type="double" />
+		<field name="unrealizedPnl" id="1" type="double" />
+		<field name="avgBuyPrice" id="1" type="double" />
+		<field name="avgSellPrice" id="1" type="double" />
+		<field name="mtmBuyPrice" id="1" type="double" />
+		<field name="mtmSellPrice" id="1" type="double" />
+		<field name="totalPnl" id="1" type="double" />
+        <field name="experimentalNetRealizedPnl" id="1" type="double" />
+        <field name="experimentalUnrealizedPnl" id="1" type="double" />
+        <field name="experimentalTotalPnl" id="1" type="double" />
+		<field name="tradeCount" id="1" type="int32" />
+	</message>
+	<message name="RiskStateSbe" id="6" description="Risk State">
+		<field name="entityType" id="2" type="EntityType"/>
+		<field name="entitySid" id="2" type="int64"/>
+		<group name="controls" id="38">
+	        <field name="type" id="2" type="RiskControlType"/>
+	        <field name="current" id="2" type="double"/>
+	        <field name="previous" id="2" type="double"/>
+	        <field name="exceeded" id="2" type="BooleanType"/>
+		</group>
+	</message>
+	<message name="RiskControlSbe" id="64" description="Risk Control">
+		<field name="entityType" id="2" type="EntityType"/>
+		<field name="toAllEntity" id="2" type="BooleanType"/>
+		<field name="specificEntitySid" id="2" type="int64"/>
+		<group name="controls" id="38">
+			<field name="type" id="2" type="RiskControlType"/>
+			<field name="value" id="2" type="double"/>
+		</group>
+	</message>
+	<message name="CommandSbe" id="7" description="Command">
+		<field name="toSend" id="60" type="BooleanType" />
+		<field name="clientKey" id="60" type="int32" />
+		<field name="commandType" id="37" type="CommandType" />
+		<field name="timeoutNs" id="37" type="int64" />
+		<group name="parameters" id="38">
+			<field name="parameterType" id="39" type="ParameterType" />
+			<field name="parameterValue" id="40" type="ParameterValue" />
+			<field name="parameterValueLong" id="52" type="int64" />
+		</group>
+	</message>
+	<message name="CommandAckSbe" id="8" description="Command Acknowledgement">
+		<field name="clientKey" id="53" type="int32" semanticType="SeqNum" />
+		<field name="commandType" id="37" type="CommandType" />
+		<field name="ackType" id="57" type="CommandAckType" />
+	</message>
+	<message name="RequestSbe" id="9" description="Request to get data">
+		<field name="clientKey" id="60" type="int32" />
+		<field name="toSend" id="60" type="BooleanType" />
+		<field name="requestType" id="42" type="RequestType" />
+		<field name="parameterBinaryBlockLength" id="42" type="int16" />
+		<field name="parameterBinaryTemplateId" id="42" type="int8" />
+		<group name="parameters" id="38">
+			<field name="parameterType" id="39" type="ParameterType" />
+			<field name="parameterValue" id="40" type="ParameterValue" />
+			<field name="parameterValueLong" id="52" type="int64" />
+		</group>
+		<data name="parameterBinaryData" id="45" type="varDataEncoding" />
+	</message>
+	<message name="ResponseSbe" id="10" description="Response for getting data">
+		<field name="clientKey" id="53" type="int32" />
+		<field name="isLast" id="43" type="BooleanType" />
+		<field name="responseMsgSeq" id="44" type="int32" />
+		<field name="resultType" id="41" type="ResultType" />
+		<field name="embeddedBlockLength" id="42" type="uint16" />
+		<field name="embeddedTemplateId" id="42" type="uint16" />
+		<data name="resultData" id="45" type="varDataEncoding" />
+	</message>
+	<message name="ServiceStatusSbe" id="16" description="Service status">
+		<field name="systemId" id="56" type="int8"/>
+		<field name="sinkId" id="56" type="int8" />
+		<field name="serviceType" id="0" type="ServiceType" semanticType="ServiceType" />
+		<field name="statusType" id="0" type="ServiceStatusType" semanticType="ServiceStatusType" />
+		<field name="modifyTimeAtOrigin" id="15" type="Timestamp" />
+		<field name="sentTime" id="15" type="Timestamp" />
+		<field name="healthCheckTime" id="15" type="Timestamp" />
+	</message>
+	<message name="PerfDataSbe" id="17" description="Performance data for a service">
+		<field name="sinkId" id="56" type="int8" />
+		<field name="roundTripNs" id="61" type="int64" />
+	</message>
+	<message name="OrderSbe" id="18" description="Order">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSnapshotSeq" id="71" type="int64" />
+        <field name="orderSid" id="71" type="int32" semanticType="Sid" />
+		<field name="secSid" id="62" type="int64" semanticType="SecSid" />
+		<field name="extId" id="70" type="LongString" />
+		<field name="orderId" id="70" type="int32" />
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="createTime" id="66" type="Timestamp" />
+		<field name="updateTime" id="66" type="Timestamp" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="parentOrderSid" id="71" type="int32" semanticType="Sid" />
+		<field name="orderRejectType" id="68" type="OrderRejectType" />
+		<field name="reason" id="71" type="LongString" />
+	</message>
+	<message name="NewOrderRequestSbe" id="19" description="Order create">
+		<field name="clientKey" id="62" type="int32"/>
+		<field name="secSid" id="62" type="int64" semanticType="SecSid" />
+		<field name="quantity" id="4" type="int32" />
+        <field name="orderType" id="68" type="OrderType" />
+		<field name="side" id="63" type="Side" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="timeoutAt" id="69" type="int64" />
+		<field name="portSid" id="70" type="int32" />
+		<field name="assignedThrottleTrackerIndex" id="70" type="int8" />
+		<field name="retry" id="70" type="BooleanType" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+        <field name="throttleCheckRequired" id="67" type="BooleanType" />
+	</message>
+	<message name="AmendOrderRequestSbe" id="20" description="Order update">
+		<field name="clientKey" id="62" type="int32"/>
+		<field name="secSid" id="62" type="int64" semanticType="SecSid" />
+		<field name="orderSidToBeAmended" id="71" type="int32" semanticType="Sid" />
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+        <field name="timeoutAt" id="69" type="int64" />
+        <field name="portSid" id="70" type="int32" />
+        <field name="assignedThrottleTrackerIndex" id="70" type="int8" />
+        <field name="retry" id="70" type="BooleanType" />
+	</message>
+	<message name="CancelOrderRequestSbe" id="21" description="Order delete">
+		<field name="clientKey" id="62" type="int32"/>
+		<field name="orderSidToBeCancelled" id="71" type="int32" semanticType="Sid" />
+		<field name="secSid" id="62" type="int64" semanticType="SecSid" />
+        <field name="timeoutAt" id="69" type="int64" />
+		<field name="side" id="63" type="Side" />
+        <field name="assignedThrottleTrackerIndex" id="70" type="int8" />
+		<field name="retry" id="70" type="BooleanType" />
+		<field name="force" id="70" type="BooleanType" />
+	</message>
+    <message name="NewCompositeOrderRequestSbe" id="76" description="Order create">
+        <field name="clientKey" id="62" type="int32"/>
+        <field name="secSid" id="62" type="int64" semanticType="SecSid" />
+        <field name="quantity" id="4" type="int32" />
+        <field name="orderType" id="68" type="OrderType" />
+        <field name="side" id="63" type="Side" />
+        <field name="tif" id="64" type="TimeInForce" />
+        <field name="isAlgoOrder" id="67" type="BooleanType" />
+        <field name="limitPrice" id="68" type="int32" />
+        <field name="stopPrice" id="69" type="int32" />
+        <field name="timeoutAt" id="69" type="int64" />
+        <field name="portSid" id="70" type="int32" />
+        <field name="assignedThrottleTrackerIndex" id="70" type="int8" />
+        <field name="retry" id="70" type="BooleanType" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+    </message>
+	<message name="OrderRequestAcceptedSbe" id="47" description="Order request accepted">
+		<field name="clientKey" id="71" type="int32" />
+		<field name="orderSid" id="71" type="int32" />
+	</message>
+	<message name="OrderRequestCompletionSbe" id="46" description="Order request completion">
+		<field name="clientKey" id="71" type="int32" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="completionType" id="72" type="OrderRequestCompletionType" />
+		<field name="rejectType" id="72" type="OrderRequestRejectType" />
+		<field name="reason" id="71" type="LongString" />
+	</message>
+	<message name="OrderAcceptedSbe" id="40" description="Order accepted">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+	</message>	
+	<message name="OrderAcceptedWithOrderInfoSbe" id="55" description="Order accepted with order info">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="clientKey" id="71" type="int32" />
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="portSid" id="70" type="int32" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+	</message>
+	<message name="OrderAmendedSbe" id="41" description="Order amended">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="origOrderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="execType" id="71" type="ExecutionType" />
+	</message>
+	<message name="OrderExpiredSbe" id="42" description="Order expired">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="price" id="71" type="int32"/>
+	</message>
+	<message name="OrderExpiredWithOrderInfoSbe" id="56" description="Order expired">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="price" id="71" type="int32"/>
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="portSid" id="70" type="int32" />
+	</message>
+	<message name="OrderCancelRejectedSbe" id="43" description="Order cancel rejected">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="origOrderSid" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="cancelRejectType" id="71" type="OrderCancelRejectType" />
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="reason" id="71" type="LongString" />
+	</message>
+	<message name="OrderCancelRejectedWithOrderInfoSbe" id="74" description="Order cancel rejected">
+        <field name="channelId" id="71" type="int32" />
+        <field name="channelSeq" id="71" type="int64" />
+        <field name="updateTime" id="15" type="Timestamp" />
+        <field name="orderSid" id="71" type="int32" />
+        <field name="origOrderSid" id="71" type="int32" />
+        <field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+        <field name="side" id="63" type="Side" />
+        <field name="orderId" id="71" type="int32" />
+        <field name="status" id="71" type="OrderStatus" />
+        <field name="cumulativeQty" id="71" type="int32" />
+        <field name="leavesQty" id="71" type="int32" />
+        <field name="cancelRejectType" id="71" type="OrderCancelRejectType" />
+        <field name="execType" id="71" type="ExecutionType" />
+        <field name="reason" id="71" type="LongString" />
+        <field name="orderType" id="68" type="OrderType" />
+        <field name="quantity" id="4" type="int32" />
+        <field name="tif" id="64" type="TimeInForce" />
+        <field name="isAlgoOrder" id="67" type="BooleanType" />
+        <field name="limitPrice" id="68" type="int32" />
+        <field name="stopPrice" id="69" type="int32" />
+        <field name="portSid" id="70" type="int32" />
+    </message>
+	<message name="OrderAmendRejectedSbe" id="44" description="Order amend rejected">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="origOrderSid" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="amendRejectType" id="71" type="OrderAmendRejectType" />
+		<field name="execType" id="71" type="ExecutionType" />
+	</message>
+	<message name="OrderCancelledSbe" id="39" description="Order cancelled">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="origOrderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+        <field name="quantity" id="4" type="int32" />
+	</message>	
+	<message name="OrderCancelledWithOrderInfoSbe" id="57" description="Order cancelled">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="origOrderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="portSid" id="70" type="int32" />
+	</message>	
+	<message name="OrderRejectedSbe" id="38" description="Order rejected">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="rejectType" id="80" type="OrderRejectType" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cumulativeQty" id="72" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="reason" id="71" type="LongString" />
+	</message>
+	<message name="OrderRejectedWithOrderInfoSbe" id="58" description="Order rejected">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="rejectType" id="80" type="OrderRejectType" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cumulativeQty" id="72" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="reason" id="71" type="LongString" />
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="portSid" id="70" type="int32" />
+	</message>
+	<message name="OrderCompletionSbe" id="23" description="Order completion">
+		<field name="orderSid" id="71" type="int32" semanticType="Sid" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="filledQuantity" id="72" type="int32" />
+		<field name="remainingQuantity" id="73" type="int32" />
+		<field name="avgPrice" id="74" type="Price" />
+	</message>
+	<message name="TradeSbe" id="60" description="Trade">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSnapshotSeq" id="71" type="int64" />
+		<field name="createTime" id="66" type="Timestamp" />
+		<field name="updateTime" id="15" type="Timestamp" />
+        <field name="tradeSid" id="71" type="int32" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="tradeStatus" id="71" type="TradeStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+        <field name="executionId" id="71" type="ExecutionId" />
+		<field name="executionQty" id="71" type="int32" />
+		<field name="executionPrice" id="71" type="int32" />
+	</message>
+	<message name="TradeCreatedSbe" id="45" description="Trade">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+        <field name="tradeSid" id="71" type="int32" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+        <field name="executionId" id="71" type="ExecutionId" />
+		<field name="executionQty" id="71" type="int32" />
+		<field name="executionPrice" id="71" type="int32" />
+		<field name="execType" id="71" type="ExecutionType" />
+	</message>
+	<message name="TradeCreatedWithOrderInfoSbe" id="59" description="Trade with order info">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+		<field name="updateTime" id="15" type="Timestamp" />
+        <field name="tradeSid" id="71" type="int32" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+        <field name="executionId" id="71" type="ExecutionId" />
+		<field name="executionQty" id="71" type="int32" />
+		<field name="executionPrice" id="71" type="int32" />
+		<field name="execType" id="71" type="ExecutionType" />
+		<field name="orderType" id="68" type="OrderType" />
+		<field name="quantity" id="4" type="int32" />
+		<field name="tif" id="64" type="TimeInForce" />
+		<field name="isAlgoOrder" id="67" type="BooleanType" />
+		<field name="limitPrice" id="68" type="int32" />
+		<field name="stopPrice" id="69" type="int32" />
+		<field name="portSid" id="70" type="int32" />
+	</message>
+	<message name="TradeCancelledSbe" id="49" description="Auto-matched Trade Cancelled">
+	    <field name="channelId" id="71" type="int32" />
+	    <field name="channelSeq" id="71" type="int64" />
+	    <field name="tradeSid" id="71" type="int32" />
+		<field name="updateTime" id="15" type="Timestamp" />
+		<field name="orderSid" id="71" type="int32" />
+		<field name="status" id="71" type="OrderStatus" />
+		<field name="price" id="71" type="int32"/>
+		<field name="cancelledExecutionQty" id="71" type="int32" />
+		<field name="cancelledExecutionPrice" id="71" type="int32" />
+		<field name="cumulativeQty" id="71" type="int32" />
+		<field name="leavesQty" id="71" type="int32" />
+		<field name="side" id="63" type="Side" />
+		<field name="orderId" id="71" type="int32" />
+		<field name="secSid" id="72" type="int64" description="either internal or external security ID"/>
+        <field name="executionId" id="71" type="ExecutionId" />
+		<field name="execType" id="71" type="ExecutionType" />
+	</message>	
+	<message name="OMDMarketDefinitionSbe" id="25" description="Market definition (10) (based on OMDC)">
+		<field name="marketCode" id="71" type="ShortString" semanticType="Market Code" />
+		<field name="marketName" id="71" type="LongString" semanticType="Market Name" />
+		<field name="currencyCode" id="71" type="Currency" semanticType="Currency Code" />
+		<field name="numOfSecurities" id="71" type="int32" />
+	</message>
+	<message name="OMDTradingSessionStatusSbe" id="26" description="Trading session status (20) (based on OMDC)">
+		<field name="marketCode" id="71" type="ShortString" semanticType="Market Code" />
+		<field name="tradingSessionID" id="71" type="int8" />
+		<field name="tradingSessionSubID" id="71" type="int8" />
+		<field name="tradingSesStatus" id="71" type="TradingSesStatus" />
+		<field name="tradingSesControlFlag" id="71" type="char" length="1" />
+		<field name="startDateTime" id="71" type="Timestamp" />
+		<field name="endDateTime" id="71" type="Timestamp" />
+	</message>
+	<message name="OMDTradeSbe" id="27" description="Trade (50) (based on OMDC) - put decoder directly on binary">
+		<field name="securityCode" id="71" type="int32" semanticType="unsigned"/>
+		<field name="tradeID" id="71" type="int32" semanticType="unsigned"/>
+		<field name="price" id="71" type="int32" />
+		<field name="quantity" id="71" type="int32" semanticType="unsigned"/>
+		<field name="trdType" id="71" type="TradeType" />
+		<field name="filler" id="71" type="char" length="2"/>
+		<field name="tradeTime" id="71" type="Timestamp"/>
+	</message>
+	<message name="OMDClosingPriceSbe" id="28" description="Trade (62) (based on OMDC) - put decoder directly on binary">
+		<field name="securityCode" id="71" type="int32" semanticType="unsigned"/>
+		<field name="closingPrice" id="71" type="int32"/>
+		<field name="numOfTrades" id="71" type="int32" semanticType="unsigned"/>
+	</message>
+	<message name="OMDNominalPriceSbe" id="29" description="Trade (40) (based on OMDC) - put decoder directly on binary">
+		<field name="securityCode" id="71" type="int32" semanticType="unsigned"/>
+		<field name="nominalPrice" id="71" type="int32"/>
+	</message>
+	<message name="OMDRetransmissionRequestSbe" id="30" description="Retransmission Request (201)">
+		<field name="channelId" id="71" type="int16" semanticType="unsigned"/>
+		<field name="filler" id="71" type="char" length="2" semanticType="filler"/>
+		<field name="beginSeqNum" id="71" type="int32" semanticType="unsigned"/>
+		<field name="endSeqNum" id="71" type="int32" semanticType="unsigned"/>
+	</message>
+	<message name="OMDRetransmissionResponseSbe" id="31" description="Retransmission Response (202)">
+		<field name="channelId" id="71" type="int16" semanticType="unsigned"/>
+		<field name="retransStatus" id="71" type="RetransStatus"/>
+		<field name="filler" id="71" type="char" length="1" semanticType="filler"/>
+		<field name="beginSeqNum" id="71" type="int32" semanticType="unsigned"/>
+		<field name="endSeqNum" id="71" type="int32" semanticType="unsigned"/>
+	</message>
+	<message name="OMDRefreshCompleteSbe" id="32" description="Refresh Complete (203)">
+		<field name="lastSeqNum" id="71" type="int32" semanticType="unsigned"/>
+	</message>
+	<message name="OMDLogonSbe" id="33" description="Logon (101)">
+		<field name="username" id="71" type="char" length="12" />
+	</message>
+	<message name="OMDLogonResponseSbe" id="34" description="Logon Response (102)">
+		<field name="sessionStatus" id="71" type="SessionStatus" />
+		<field name="filler" id="71" type="char" length="3" semanticType="filler"/>
+	</message>
+	<message name="OMDPacketHeaderSbe" id="35" description="OMD Packet Header">
+		<field name="pktSize" id="71" type="int16" semanticType="unsigned"/>
+		<field name="msgCount" id="71" type="int8" semanticType="unsigned"/>
+		<field name="filler" id="71" type="char" length="1" semanticType="filler"/>
+		<field name="seqNum" id="71" type="int32" semanticType="unsigned"/>
+		<field name="sendTime" id="71" type="Timestamp"/>
+	</message>
+	<message name="FragmentInitSbe" id="36" description="first fragment in a frame">
+		<field name="fragmentSeq" id="53" type="int32" />
+		<field name="isLast" id="53" type="BooleanType" />
+		<data name="payload" id="45" type="varDataEncoding" />
+	</message>
+	<message name="FragmentSbe" id="37" description="sequential fragments in a frame">
+		<field name="fragmentSeq" id="53" type="int32" description="we may use a smaller size field"/>
+		<field name="isLast" id="53" type="BooleanType" />
+		<data name="payload" id="45" type="varDataEncoding" />
+	</message>
+    <message name="StrategyTypeSbe" id="50" description="strategy type">
+        <field name="strategyId" id="10" type="int64" semanticType="Id" />
+        <field name="name" id="11" type="MediumString" />
+        <group name="fields" id="8">
+            <field name="parameterId" id="12" type="int32" semanticType="Id" />
+            <field name="parameterSource" id="14" type="StrategyParamSource" />
+            <field name="parameterType" id="15" type="StrategyParamType" />
+            <field name="parameterReadOnly" id="16" type="BooleanType" />
+		</group>
+    </message>
+    <message name="StrategyStatusSbe" id="51" description="strategy status">
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <field name="strategyId" id="2" type="int64" semanticType="Id" />
+        <field name="status" id="3" type="StrategyStatusType" />
+    </message>
+    <message name="StrategyParamsSbe" id="52" description="strategy param update">
+        <field name="strategyId" id="2" type="int64" semanticType="Id" />
+        <group name="parameters" id="38">
+            <field name="parameterId" id="39" type="int32" />
+            <field name="parameterValue" id="40" type="ParameterValue" />
+            <field name="parameterValueLong" id="52" type="int64" />
+        </group>
+    </message>
+    <message name="StrategyUndParamsSbe" id="53" description="strategy underlying param update">
+        <field name="strategyId" id="2" type="int64" semanticType="Id" />
+        <field name="undSid" id="31" type="int64" />
+        <group name="parameters" id="38">
+            <field name="parameterId" id="39" type="int32" />
+            <field name="parameterValue" id="40" type="ParameterValue" />
+            <field name="parameterValueLong" id="52" type="int64" />
+        </group>
+    </message>
+    <message name="StrategyWrtParamsSbe" id="54" description="strategy warrant param update">
+        <field name="strategyId" id="2" type="int64" semanticType="Id" />
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <group name="parameters" id="38">
+            <field name="parameterId" id="39" type="int32" />
+            <field name="parameterValue" id="40" type="ParameterValue" />
+            <field name="parameterValueLong" id="52" type="int64" />
+        </group>
+    </message>
+    <message name="StrategyIssuerParamsSbe" id="68" description="strategy issuer param update">
+        <field name="strategyId" id="2" type="int64" semanticType="Id" />
+        <field name="issuerSid" id="1" type="int32" semanticType="Id" />
+        <group name="parameters" id="38">
+            <field name="parameterId" id="39" type="int32" />
+            <field name="parameterValue" id="40" type="ParameterValue" />
+            <field name="parameterValueLong" id="52" type="int64" />
+        </group>
+    </message>
+    <message name="StrategyIssuerUndParamsSbe" id="81" description="strategy issuer param update">
+        <field name="strategyId" id="2" type="int64" semanticType="Id" />
+        <field name="issuerUndSid" id="1" type="int64" semanticType="Id" />
+        <field name="issuerSid" id="1" type="int32" semanticType="Id" />
+        <field name="undSid" id="31" type="int64" />
+        <group name="parameters" id="38">
+            <field name="parameterId" id="39" type="int32" />
+            <field name="parameterValue" id="40" type="ParameterValue" />
+            <field name="parameterValueLong" id="52" type="int64" />
+        </group>
+    </message>
+    <message name="StrategySwitchSbe" id="61" description="strategy switch">
+        <field name="switchType" id="13" type="StrategySwitchType" />
+        <field name="switchSource" id="14" type="StrategyParamSource" />
+        <field name="sourceSid" id="39" type="int64" />
+        <field name="onOff" id="52" type="BooleanType" />
+    </message>
+    <message name="BoobsSbe" id="65" description="Bid Ask High Low Last">
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+        <field name="bid" id="14" type="int32" />
+        <field name="ask" id="15" type="int32" />
+        <field name="last" id="15" type="int32" />
+    </message>
+    <message name="MarketStatusSbe" id="66" description="Market Status">
+        <field name="exchangeSid" id="17" type="int32" />
+        <field name="status" id="18" type="MarketStatusType" />
+    </message>
+    <message name="GenericTrackerSbe" id="67" description="Generic tracker message">
+        <field name="sendBy" id="31" type="int8" />
+        <field name="stepId" id="32" type="TrackerStepType" />
+        <field name="timestamp" id="33" type="Timestamp" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+    </message>
+    <message name="EventSbe" id="69" description="">
+    	<field name="sinkId" id="31" type="int32" />
+    	<field name="time" id="31" type="Timestamp" />
+    	<field name="level" id="31" type="EventLevel" />
+    	<field name="category" id="31" type="EventCategory" />
+    	<field name="eventType" id="31" type="EventType" />
+		<group name="eventValues" id="38">
+			<field name="type" id="40" type="EventValueType" />
+			<field name="value" id="52" type="int64" />
+		</group>
+		<data name="description" id="45" type="varDataEncoding" description="Must decode this before decoding eventValues"/>
+    </message>
+    <message name="DividendCurveSbe" id="70" description="">
+        <field name="secSid" id="31" type="int64" semanticType="Id" />
+        <group name="points" id="38">
+            <field name="amount" id="50" type="Price" semanticType="Price" />
+            <field name="date" id="51" type="Timestamp" />
+        </group>
+    </message>
+    <message name="GreeksSbe" id="71" description="">
+        <field name="secSid" id="31" type="int64" semanticType="Id" />
+        <field name="delta" id="32" type="int32" />
+        <field name="vega" id="33" type="int32" />
+        <field name="gamma" id="34" type="int32" />
+        <field name="impliedVol" id="35" type="int32" />
+        <field name="bidImpliedVol" id="36" type="int32" />
+        <field name="askImpliedVol" id="37" type="int32" />
+        <field name="refSpot" id="38" type="int32" />
+        <field name="bid" id="39" type="int32" />
+        <field name="ask" id="40" type="int32" />
+    </message>
+    <message name="OrderBookSnapshotSbe" id="72"
+        description="Order Book Snapshot" >
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <field name="seqNum" id="28" type="int32" />
+        <field name="transactTime" id="9" type="Timestamp" />
+        <field name="isRecovery" id="31" type="BooleanType" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+        <group name="askDepth" id="9">
+            <field name="price" id="3" type="int32" />
+            <field name="quantity" id="4" type="int32" />
+            <field name="tickLevel" id="5" type="int32" />
+        </group>
+        <group name="bidDepth" id="8">
+            <field name="price" id="3" type="int32" />
+            <field name="quantity" id="4" type="int32" />
+            <field name="tickLevel" id="3" type="int32" />
+        </group>
+    </message>
+    <message name="MarketStatsSbe" id="75"
+        description="Market Stats" >
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <field name="seqNum" id="28" type="int32" />
+        <field name="transactTime" id="9" type="Timestamp" />
+        <field name="isRecovery" id="31" type="BooleanType" />
+        <field name="triggerInfo" id="30" type="TriggerInfo" />
+        <field name="open" id="32" type="int32" />
+        <field name="high" id="34" type="int32" />
+        <field name="low" id="35" type="int32" />
+        <field name="close" id="36" type="int32" />
+        <field name="volume" id="37" type="int32" />
+        <field name="turnover" id="38" type="int64" />
+    </message>
+    <message name="ScoreBoardSchemaSbe" id="77" description="scoreboard schema">
+        <field name="scoreBoardSid" id="1" type="int32" semanticType="Id" />
+        <group name="fields" id="8">
+            <field name="fieldId" id="12" type="int32" semanticType="Id" />
+            <field name="fieldType" id="15" type="GenericFieldType" />
+        </group>
+    </message>
+    <message name="ScoreBoardSbe" id="78" description="Score Board" >
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <field name="score" id="2" type="int32" />
+        <group name="details" id="38">
+            <field name="fieldId" id="39" type="int32" />
+            <field name="fieldValueLong" id="52" type="int64" />
+        </group>
+    </message>
+    <message name="NoteSbe" id="79" description="Note">
+    	<field name="noteSid" id="1" type="int32" semanticType="Id" />
+        <field name="entitySid" id="1" type="int64" semanticType="Id" />
+        <field name="createDate" id="66" type="int32" />
+        <field name="createTime" id="66" type="Timestamp" />
+        <field name="updateDate" id="66" type="int32" />
+        <field name="updateTime" id="66" type="Timestamp" />
+        <field name="isDeleted" id="54" type="BooleanType" />
+        <field name="isArchived" id="54" type="BooleanType" />
+        <data name="description" id="45" type="varDataEncoding" description="Must decode this before decoding eventValues"/>
+    </message>
+    <message name="ChartDataSbe" id="80" description="ChartData">
+        <field name="secSid" id="1" type="int64" semanticType="Id" />
+        <field name="dataTime" id="66" type="Timestamp" />
+        <field name="windowSizeInSec" id="66" type="int32" />
+        <field name="open" id="3" type="Price" semanticType="Price" />
+        <field name="high" id="3" type="Price" semanticType="Price" />
+        <field name="close" id="3" type="Price" semanticType="Price" />
+        <field name="low" id="3" type="Price" semanticType="Price" />
+        <field name="vwap" id="3" type="Price" semanticType="Price" />
+        <field name="valueAreaHigh" id="3" type="Price" semanticType="Price" />
+        <field name="valueAreaLow" id="3" type="Price" semanticType="Price" />
+        <field name="volClusterDirection" id="5" type="VolumeClusterDirectionType" />
+        <group name="volAtPrices" id="38">
+            <field name="price" id="3" type="Price" semanticType="Price" />
+            <field name="bidQty" id="4" type="int64" />
+            <field name="askQty" id="4" type="int64" />
+            <field name="significant" id="54" type="BooleanType" />
+            <field name="volumeClusterType" id="55" type="VolumeClusterType"/>  
+        </group>
+    </message>
+</messageSchema>

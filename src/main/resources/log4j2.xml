@@ -1,0 +1,62 @@
+<Configuration status="warn" name="lunar" packages="">
+  <Properties>
+    <Property name="log.path">/prod/lunar/logs</Property>
+  </Properties>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %p %c{1} - %m%n"/>
+    </Console>
+    <RollingFile name="ROLLING_FILE" fileName="${log.path}/lunar.log"
+        filePattern="${log.path}/$${date:yyyy-MM}/lunar-%d{MM-dd-yyyy}-%i.log">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %p %c{1} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <OnStartupTriggeringPolicy />
+            <SizeBasedTriggeringPolicy size="1 GB"/>
+        </Policies>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Logger name="com.lunar.service.ReferenceDataService" level="ERROR" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Logger name="com.lunar.service.DashboardWebService" level="ERROR" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Logger name="com.lunar.service.PerformanceService" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Logger name="com.lunar.service.OrderManagementAndExecutionService" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>  
+    <Logger name="com.lunar.service.OrderAndTradeSnapshotService" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>  
+    <Logger name="com.lunar.service.PortfolioAndRiskService" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Logger name="com.lunar.pricing.BucketPricer" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Logger name="com.lunar.strategy.speedarb" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Logger name="com.lunar.strategy.speedarbhybrid" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Logger>
+    <Root level="debug">
+      <AppenderRef ref="STDOUT"/>
+      <AppenderRef ref="ROLLING_FILE"/>
+    </Root>
+  </Loggers>
+</Configuration>

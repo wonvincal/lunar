@@ -1,0 +1,65 @@
+2015/10/11
+
+Result
+======
+[runCreateAndUpdateTenLevels]:
+BidMarketOrderBook: 43741737 ns
+PriceLevelBasedMarketOrderBook: 66474222 ns
+BidMarketOrderBook: 50% better
+
+
+[runCreateBestAndDeleteBest]:
+BidMarketOrderBook: 20436509 ns
+PriceLevelBasedMarketOrderBook: 141983579 ns
+BidMarketOrderBook: 85% reduction in latency
+
+[runCreateBestAndDeleteBestTillEmpty]:
+BidMarketOrderBook: 29076648 ns
+PriceLevelBasedMarketOrderBook: 212319604 ns
+BidMarketOrderBook: tons reduction in latency
+-------------------------------------------------------------------
+
+Result for numRuns: 30, numTries: 3,000,000 per test, bookDepth: 10
+runDate: 2015-10-28T12:31:34.258
+wall clock: from: 12:31:15.103 to: 12:31:34.257
+took: 19,153,766,244 ns
+===================================================================
+[runCreateAndUpdateTenLevels]: average latency
+BidMarketOrderBook: 48,756,383 ns
+PriceLevelBasedMarketOrderBook: 81,609,509 ns
+BidMarketOrderBook is 1.674x of PriceLevelBasedMarketOrderBook
+
+[runCreateBestAndDeleteBest]: average latency
+BidMarketOrderBook: 23,441,578 ns
+PriceLevelBasedMarketOrderBook: 152,205,329 ns
+BidMarketOrderBook is 6.493x of PriceLevelBasedMarketOrderBook
+
+[runCreateBestAndDeleteBestTillEmpty]: average latency
+BidMarketOrderBook: 33,091,120 ns
+PriceLevelBasedMarketOrderBook: 231,001,826 ns
+BidMarketOrderBook is 6.981x of PriceLevelBasedMarketOrderBook
+-------------------------------------------------------------------
+
+Result for numRuns: 30, numTries: 3,000,000 per test, bookDepth: 10
+runDate: 2015-10-28T12:45:19.690
+wall clock: from: 12:44:50.356 to: 12:45:19.690
+took: 29,333,145,494 ns
+===================================================================
+[runCreateAndUpdateTenLevels]: average latency
+BidMarketOrderBook: 48,810,429 ns
+PriceLevelBasedMarketOrderBook: 79,648,464 ns
+BidMarketOrderBookWithNoDeleteProxy: 128,619,998 ns
+BidMarketOrderBook is 2.635x of BidMarketOrderBookWithNoDeleteProxy
+
+[runCreateBestAndDeleteBest]: average latency
+BidMarketOrderBook: 23,016,990 ns
+PriceLevelBasedMarketOrderBook: 150,005,171 ns
+BidMarketOrderBookWithNoDeleteProxy: 75,277,091 ns
+BidMarketOrderBook is 6.517x of PriceLevelBasedMarketOrderBook
+
+[runCreateBestAndDeleteBestTillEmpty]: average latency
+BidMarketOrderBook: 32,640,415 ns
+PriceLevelBasedMarketOrderBook: 229,715,559 ns
+BidMarketOrderBookWithNoDeleteProxy: 112,644,902 ns
+BidMarketOrderBook is 7.038x of PriceLevelBasedMarketOrderBook
+-------------------------------------------------------------------

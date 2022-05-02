@@ -1,0 +1,995 @@
+namespace com.lunar.message.io.fbs;
+
+enum BooleanTypeFbs:byte {
+	FALSE = 0,
+	TRUE = 1
+}
+
+enum CommandAckTypeFbs:byte {
+	OK = 0,
+	NOT_SUPPORTED = 1,
+	TIMEOUT = 2,
+	INVALID_PARAMETER = 3,
+	FAILED = 4
+}
+		
+enum CommandTypeFbs:byte {
+	NA = 0,
+	INIT = 1,
+	START = 2,
+	STOP = 3,
+	SEND_ECHO = 4,
+	GATHER_PERF_STAT = 5,
+	WARMUP = 6,
+	LINE_HANDLER_ACTION = 7,
+	REFRESH = 8,
+	EVALUATE_STATE = 9,
+	RESET = 10,
+    CAPTURE_PROFIT = 11,
+    START_TEST_MODE = 12,
+    STOP_TEST_MODE = 13,
+    SEND_STRAT_PARAMS = 14,
+    PLACE_SELL_ORDER = 15,
+    PRINT_ORDER_INFO_IN_LOG = 16,
+    PRINT_ALL_ORDER_INFO_IN_LOG = 17
+}
+
+enum EntityTypeFbs:byte {
+	INVALID = 0,
+	SECURITY = 1,
+	ISSUER = 2,
+	UNDERLYING = 3,
+	FIRM = 4,
+	PORTFOLIO = 5
+}
+
+enum EventCategoryFbs:byte {
+	CORE = 0,
+	EXECUTION = 1,
+	MARKET_DATA = 2,
+	STRATEGY = 3,
+	OTHER = 4
+}
+
+enum EntryTypeFbs:byte {
+    BID = 0, OFFER = 1
+}
+
+enum EventLevelFbs:byte {
+	OK = 0,
+	INFO = 1,
+	WARNING = 2,
+	CRITICAL = 3 
+}
+
+enum EventTypeFbs:byte {
+    UNKNOWN = 0,
+    THROTTLED = 1,
+    ORDER_VALIDATION = 2,
+    ORDER_EXPLAIN = 3,
+    TO_MAKING_SIGNAL = 4,
+    VOL_DOWN_SIGNAL = 5,
+    VOL_UP_SIGNAL = 6,
+    CONNECTION = 7
+}
+
+enum EventValueTypeFbs:byte {
+    NULL_VAL = -128,
+    ANY = 0,
+    SECURITY_SID = 1,
+    PREV_UNDERLYING_BID = 2,
+    PREV_UNDERLYING_ASK = 3,
+    UNDERLYING_BID = 4,
+    UNDERLYING_ASK = 5,
+    PREV_WARRANT_BID = 6,
+    PREV_WARRANT_ASK = 7,
+    WARRANT_BID = 8,
+    WARRANT_ASK = 9,
+    VELOCITY = 10,
+    DELTA = 11,
+    ORDER_SID = 12,
+    STRATEGY_EXPLAIN = 13,
+    WARRANT_SPREAD = 14,
+    TICK_SENSITIVITY = 15,
+    HIGH_WARRANT_BID = 16,
+    BEST_SPOT = 17,
+    WAVG_SPOT = 18,
+    PREV_WAVG_SPOT = 19,
+    BUCKET_SIZE = 20,
+    BUCKET_VIOLATION_TYPE = 21,
+    TURNOVER_PRICE = 22,
+    HAS_POSITION = 23,
+    SIDE = 24,
+    PRICING_MODE = 25,
+    GENERIC_EVENT_FLAGS = 26
+}
+
+enum ExecutionTypeFbs:byte {
+    NEW = 0,
+    TRADE = 1,
+    CANCEL = 2,
+    REJECT = 3,
+    EXPIRE = 4,
+    AMEND = 5,
+    TRADE_CANCEL = 6,
+    CANCEL_REJECT = 7,
+    AMEND_REJECT = 8
+}
+
+enum LineHandlerActionTypeFbs:byte {
+    CHANGE_MODE_ACCEPT_ON_NEW = 0,
+    CHANGE_MODE_REJECT_ON_NEW = 1,
+    CHANGE_MODE_ACCEPT_ON_CANCEL = 2,
+    CHANGE_MODE_REJECT_ON_CANCEL = 3,
+    FILL_ALL_LIVE_ORDERS = 4,
+    PARTIAL_FILL_ALL_LIVE_ORDERS = 5,
+    EXPIRE_ALL_LIVE_ORDERS = 6,
+    CANCEL_ALL_TRADES = 7,
+    RESET = 8,
+    CHANGE_MODE_MATCH_ON_NEW = 9,
+    CHANGE_MODE_MATCH_WITH_MULTI_FILLS_ON_NEW = 10,
+    CHANGE_MODE_PARTIAL_MATCH_ON_NEW = 11,
+    CHANGE_MODE_PARTIAL_MATCH_WITH_MULTI_FILLS_ON_NEW = 12
+}
+
+enum MessageTypeFbs:byte {
+    INVALID = 0,
+    MARKET_DATA_ORDER_BOOK_UPDATE = 1,
+    AGGREGATE_ORDER_BOOK_UPDATE = 2,
+    MARKET_DATE_TRADE = 3,
+    SECURITY = 4,
+    TIMER_EVENT = 5,
+    RISK_EVENT = 6,
+    COMMAND = 7,
+    COMMAND_RESULT = 8,
+    REQUEST = 9,
+    RESPONSE = 10,
+    REGISTER_RESPONSE = 11,
+    INVALID_MESSAGE_NOTIFICATION = 12,
+    ECHO = 13,
+    CONTEXT_UPDATE = 14,
+    EXCHANGE = 15,
+    SERVICE_STATUS = 16,
+    ORDER = 18,
+    STRATEGY_TYPE = 50,
+    STRAT_PARAM_UPDATE = 52,
+    STRAT_UND_PARAM_UPDATE = 53,
+    STRAT_WRT_PARAM_UPDATE = 54,
+    TRADE = 60,
+    STRATEGY_SWITCH = 61,
+    ISSUER = 62,
+    POSITION = 63,
+    RISK_CONTROL = 64,
+    BOOBS = 65,
+    MARKET_STATUS = 66,
+    GENERIC_TRACKER = 67,
+    STRAT_ISS_PARAM_UPDATE = 68,
+    EVENT = 69,
+    DIVIDEND_CURVE = 70,
+    GREEKS = 71,
+    ORDERBOOK_SNAPSHOT = 72,
+    MARKET_STATS = 75,
+    SCOREBOARD_SCHEMA = 77,
+    SCOREBOARD = 78,
+    NOTE = 79,
+    CHART_DATA = 80,
+    STRAT_ISS_UND_PARAM_UPDATE = 81
+}
+
+enum OptionStyleFbs:byte {
+    AMERICAN = 0, EUROPEAN = 1, ASIAN = 2
+}
+
+enum OrderRequestCompletionTypeFbs:byte {
+    OK = 0,
+    FAILED = 1,
+    REJECTED_INTERNALLY = 2,
+    ALREADY_IN_PENDING_CANCEL = 3,
+    ALREADY_IN_PENDING_AMEND = 4,
+    REJECTED = 5
+}
+
+enum OrderRejectTypeFbs:byte {
+	INVALID = 0,
+	ORDER_EXCEED_LIMIT = 3,
+	DUPLICATE_ORDER = 6,
+	INCORRECT_QTY = 13,
+	PRICE_EXCEEDS_CURRENT_PRICE_BAND = 16,
+	REFERENCE_PRICE_IS_NOT_AVAILABLE = 19,
+	NOTIONAL_VALUE_EXCEEDS_THRESHOLD = 20,
+	VALID_AND_NOT_REJECT = 80,
+	INSUFFICIENT_LONG_POSITION = 81,
+	CROSSED = 82,
+	INVALID_PRICE = 83,
+	ORDER_EXCEED_PURCHASING_POWER = 84,
+	RMS_INSUFFICIENT_LONG_POSITION_DIRECT_MAP = 93,
+	OTHER_INTERNALLY = 98,
+	OTHER = 99,
+	PRICE_EXCEEDS_CURRENT_PRICE_BAND_OVERRIDE_NOT_ALLOWED = 101,
+	PRICE_EXCEEDS_CURRENT_PRICE_BAND_OTHER = 102
+}
+
+enum OrderRequestRejectTypeFbs:byte {
+    TOO_LATE_TO_CANCEL = 0,
+    UNKNOWN_ORDER = 1,
+    ORDER_EXCEED_LIMIT_OR_ORDER_ALREADY_IN_PENDING_CANCEL_OR_PENDING_REPLACE_STATUS = 3,
+    DUPLICATE_ORDER_OR_DUPLICATE_CLIENT_ID_RECEIVED = 6,
+    INCORRECT_QTY = 13,
+    PRICE_EXCEEDS_CURRENT_PRICE_BAND = 16,
+    REFERENCE_PRICE_IS_NOT_AVAILABLE = 19,
+    NOTIONAL_VALUE_EXCEEDS_THRESHOLD = 20,
+    VALID_AND_NOT_REJECT = 80,
+    INSUFFICIENT_LONG_POSITION = 81,
+    CROSSED = 82,
+    INVALID_PRICE = 83,
+    ORDER_EXCEED_PURCHASING_POWER = 84,
+    RMS_INSUFFICIENT_LONG_POSITION_DIRECT_MAP = 93,
+    EXCEED_UNDERLYING_THROTTLE =  94,
+    TIMEOUT_BEFORE_THROTTLE = 95,
+    TIMEOUT_AFTER_THROTTLED = 96,
+    TIMEOUT = 97,
+    THROTTLED = 98,
+    OTHER = 99,
+    PRICE_EXCEEDS_CURRENT_PRICE_BAND_OVERRIDE_NOT_ALLOWED = 101,
+    PRICE_EXCEEDS_CURRENT_PRICE_BAND_OTHER = 102
+}
+
+enum OrderStatusFbs:byte {
+    PENDING_NEW = 0,
+    NEW = 1,
+    PENDING_AMEND = 2,
+    FILLED = 3,
+    PENDING_CANCEL = 4,
+    CANCELLED = 5,
+    EXPIRED = 6,
+    REJECTED = 7,
+    FAILED = 8,
+    PARTIALLY_FILLED = 9,
+    THROTTLED = 10
+}
+                
+enum OrderTypeFbs:byte {
+	INVALID = 0,
+    MARKET_ORDER = 49,
+    LIMIT_ORDER = 50,
+    STOP_ORDER = 51,
+    STOP_LIMIT_ORDER = 52,
+    ENHANCED_LIMIT_ORDER = 53,
+    MARKET_LIMIT_ORDER = 75,
+    LIMIT_THEN_CANCEL_ORDER = 88
+}
+
+enum ParameterTypeFbs:byte {
+    NULL_VAL = -128,
+    BOUND = 0,
+    BROADCAST_FREQ = 1,
+    ENTITY_TYPE = 2,
+    EXCHANGE_CODE = 3,
+    EXCHANGE_SID = 4,
+    SECURITY_SID = 5,
+    ORIGIN = 6,
+    OPTION_TYPE = 7,
+    RIC = 8,
+    STRATEGY_ID = 9,
+    SECURITY_CODE = 10,
+    SECURITY_TYPE = 11,
+    UNDERLYING_SECURITY_SID = 12,
+    UNDERLYING_SECURITY_CODE = 13,
+    WAIT_IN_MS = 14,
+    SERVICE_TYPE = 15,
+    ECHO_REMAINING = 16,
+    MESSAGE_TYPE = 17,
+    SINK_ID = 18,
+    DATA_TYPE = 19,
+    DUMMY_EXCHANGE_ACTION_TYPE = 20,
+    PARAM_NAME = 21,
+    PARAM_VALUE = 22,
+    PURCHASING_POWER = 23,
+    CHANNEL_ID = 24,
+    PORTFOLIO_SID = 25,
+    ISSUER_SID = 26,
+    CHANNEL_SEQ = 27,
+    ENTITY_SID = 28,
+    DESCRIPTION = 29,
+    IS_DELETED = 30,
+    IS_ARCHIVED = 31,
+    NOTE_SID = 32,
+    WINDOW_SIZE_IN_SEC = 33,
+    SIDE = 34,
+    QUANTITY = 35,
+    PRICE = 36,
+    FROM_TIME = 37,
+    TO_TIME = 38,
+    STRATEGY_SWITCH_TYPE = 39,
+    CLIENT_ORDER_ID = 40
+}
+
+enum PutOrCallFbs:byte {
+    PUT = 0, CALL = 1
+}
+
+enum RequestTypeFbs:byte {
+	CREATE = 0,
+	GET = 1,
+	INIT = 2,
+	START = 4,
+	STOP = 5,
+	SUBSCRIBE = 6,
+	UNSUBSCRIBE = 7,
+	REGISTER = 8,
+	UNREGISTER = 9,
+	ECHO = 10,
+	GET_PERF_STAT = 11,
+	GET_SYSTEM_STATUS = 12,
+	UPDATE = 13,
+	GET_AND_SUBSCRIBE = 14
+}
+
+enum ResultTypeFbs:byte {
+	OK = 0,
+	FAILED = 1
+}
+
+enum RiskControlTypeFbs:byte {
+	INVALID = 0,
+	MAX_PROFIT = 1,
+	MAX_LOSS = 2,
+	MAX_OPEN_POSITION = 3,
+	MAX_CAP_LIMIT = 4
+}
+
+enum SecurityTypeFbs:byte {
+	STOCK = 0, WARRANT = 1, CBBC = 2, INDEX = 3, FUTURES = 4
+}
+
+enum ServiceTypeFbs:byte {
+	NULL = 0,
+	RefDataService = 1,
+	StrategyService = 2,
+	MarketDataService = 3,
+	OrderManagementAndExecutionService = 4,
+	AdminService = 5,
+	EchoService = 6,
+	AeronService = 7,
+	PerformanceService = 8,
+	DeadLetterService = 9,
+	DashboardService = 10,
+	PortfolioAndRiskService = 11,
+	MarketDataRefreshService = 12,
+	MarketDataSnapshotService = 13,
+	LineHandler = 14,
+	ClientService = 15,
+	ExchangeService = 16,
+	OrderAndTradeSnapshotService = 17,
+	PersistService = 18,
+	NotificationService = 19,
+	WarmupService = 20,
+	PricingService = 21,
+	PingService = 22,
+	PongService = 23,
+    ScoreBoardService = 24
+}
+
+enum ServiceStatusTypeFbs:byte {
+	UP = 0,
+	DOWN = 1,
+	INITIALIZING = 2,
+	WARMING_UP = 3,
+	HEARTBEAT = 4
+}
+
+enum SideFbs:byte {
+	BUY = 0, SELL = 1
+}
+
+enum StrategyStatusTypeFbs:byte {
+	OFF = 0,
+	ACTIVE = 1,
+	IDLE = 2,
+    STRATEGY_EXITING = 3,
+    PRICE_CHECK_EXITING = 4,
+    NO_CHECK_EXITING = 5,
+    SEMI_MANUAL_EXITING = 6,
+    CLOSING_STRATEGY_EXITING = 7,
+    CLOSING_PRICE_CHECK_EXITING = 8,
+    ALLOW_SELL_ON_WIDE_SPREAD = 9,
+    ERROR = 10,
+    SCOREBOARD_EXITING = 11
+}
+
+enum StrategyExitMode:byte {
+    NULL = -128,
+    NO_EXIT = 1,
+    STRATEGY_EXIT = 2,
+    PRICE_CHECK_EXIT = 3,
+    NO_CHECK_EXIT = 4,
+    SEMI_MANUAL_EXIT = 5,
+    CLOSING_STRATEGY_EXIT = 6,
+    CLOSING_PRICE_CHECK_EXIT = 7,
+    ERROR = 8,
+    SCOREBOARD_EXIT = 9
+}
+
+enum StrategySwitchTypeFbs:byte {
+    NULL = -128,
+    UNKNOWN = 0,
+    STRATEGY_PERSIST = 1,
+    STRATEGY_DAY_ONLY = 2,
+    SCOREBOARD_PERSIST = 3,
+    SCOREBOARD_DAY_ONLY = 4
+}
+
+enum PricingMode:byte {
+    NULL = -128,
+    UNKNOWN = 1,
+    MID = 2,
+    WEIGHTED = 3,
+    ADJUSTVOL = 4
+}
+
+enum StrategyParamSourceFbs:byte {
+    NULL = -128,
+    STRATEGY_ID = 0,
+    SECURITY_SID = 1,
+    UNDERLYING_SECURITY_ID = 2,
+    ISSUER_SID = 3
+}
+
+enum StrategyParamTypeFbs:byte {
+	STRING = 1,
+	LONG = 2
+}
+
+enum GenericFieldTypeFbs:byte {
+    NULL = -128,
+    UNKNOWN = 0,
+    BOOLEAN = 1,
+    LONG = 2,
+    NANOSECOND = 3,
+    DECIMAL3 = 4,
+    DECIMAL5 = 5,
+    DECIMAL6 = 6
+}
+
+enum TradeStatusFbs:byte {
+    NEW = 0,
+    CANCELLED = 1
+}
+        
+enum TimeInForceFbs:byte {
+    DAY = 0,
+    GOOD_TILL_CANCEL = 1,
+    FILL_AND_KILL = 3,
+    GOOD_TILL_DATE = 6
+}
+
+enum UpdateActionFbs:byte {
+    NEW = 0,
+    CHANGE = 1,
+    DELETE = 2,
+    CLEAR = 3
+}
+
+enum DataType:byte {
+    ALL_ORDER_AND_TRADE_UPDATE = 1,
+    TRADE_UPDATE = 2,
+    ALL_POSITION_UPDATE = 3,
+    PORTFOLIO_POSITION_UPDATE = 4,
+    ALL_RISK_CONTROL_STATE_UPDATE = 5,
+    ALL_RISK_CONTROL_STATE_UPDATE_IF_CHANGED = 6,
+    PORTFOLIO_RISK_CONTROL_STATE_UPDATE = 7,
+    ALL_EVENT = 8,
+    ALL_SERVICE_STATUS = 9,
+    ALL_SUPPORTED_WINDOW_SIZE = 10,
+    VALIDATION_BOOK = 11
+}
+
+enum StrategyExplainType:byte {
+    STOCK_WIDESPREAD_BUY_SIGNAL = 1,
+    STOCK_TIGHTSPREAD_BUY_SIGNAL = 2,
+    STOP_LOSS_SELL_SIGNAL = 3,
+    PROFIT_RUN_SELL_SIGNAL = 4,
+    EXIT_STRATEGY_SELL_SIGNAL = 5,
+    USER_CAPTURE_PROFIT_SIGNAL = 6,
+    PREDICTION_BY_WAVG_BUCKET_BUY_SIGNAL = 7,
+    PREDICTION_BY_WAVG_SPOT_BUY_SIGNAL = 8,
+    PREDICTION_BY_BID_BUCKET_BUY_SIGNAL = 9,
+    ISSUER_DOWN_VOL_SELL_SIGNAL = 10,
+    TO_MAKING_SELL_SIGNAL = 11,
+    STOP_PROFIT_SELL_SIGNAL = 12,
+    NON_ISSUER_BID_SELL_SIGNAL = 13,
+    USER_PLACE_SELL_ORDER_SIGNAL = 14,
+    QUICK_PROFIT_SELL_SIGNAL = 15,
+    LARGE_OUTSTANDING_SELL_SIGNAL = 16,
+    CLOSING_PROFIT_RUN_SELL_SIGNAL = 17,
+    DELTA_LIMIT_SELL_SIGNAL = 18
+}
+
+enum MarketOutlookType:byte {
+	BULLISH = 1,
+	BEARISH = 2,
+	NORMAL = 3
+}
+
+enum StrategyTriggerType:byte {
+    VELOCITY_5MS = 1,
+    VELOCITY_10MS = 2,
+    ALLOW_ALL = 3
+}
+
+enum SpreadStateFbs:byte {
+    NULL = -128,
+    NORMAL = 1,
+    WIDE = 2,
+    TOO_WIDE = 3
+}
+
+enum VolumeClusterDirectionTypeFbs:byte{
+    UNKNOWN = 0,
+    UP = 1,
+    DOWN = 2,
+    NEUTRAL = 3
+}
+
+enum VolumeClusterTypeFbs:byte{
+    NORMAL = 0,
+    HIGH = 1,
+    POC = 2
+}
+
+union MessagePayloadFbs {
+	CommandFbs,
+	CommandAckFbs,
+	CancelOrderRequestFbs,
+	ExchangeFbs,
+	EventFbs,
+	HeartbeatFbs, 
+	IssuerFbs, 
+	AggregateOrderBookUpdateFbs,
+	NewOrderRequestFbs, 
+	OrderFbs,
+	OrderRequestCompletionFbs,
+	PositionFbs,
+	RequestFbs, 
+	ResponseFbs,
+	RiskControlFbs,
+	RiskStateFbs, 
+	SecurityFbs,
+	ServiceStatusFbs, 
+	StrategyTypeFbs, 
+	StrategyStatusFbs, 
+	StrategyParametersFbs, 
+	StrategyUndParametersFbs, 
+    StrategyIssuerParametersFbs,
+	StrategyWrtParametersFbs, 
+	StrategySwitchFbs,
+	TradeFbs,
+    OrderBookSnapshotFbs,
+    MarketStatsFbs,
+    ScoreBoardSchemaFbs,
+    ScoreBoardFbs,
+    NoteFbs,
+    ChartDataFbs,
+    StrategyIssuerUndParametersFbs
+}
+
+table AmendOrderRequestFbs {
+    clientKey:int;
+    secSid:long;
+    orderSidToBeAmended:int;
+    orderType:OrderTypeFbs;
+    quantity:int;
+    side:SideFbs;
+    tif:TimeInForceFbs;
+    limitPrice:int;
+    stopPrice:int;
+    timeoutAt:long;
+    portSid:int;
+}
+
+table CancelOrderRequestFbs {
+    clientKey:int;
+    secSid:long;
+    orderSidToBeCancelled:int;
+    timeoutAt:long;
+    retry:bool;
+    side:SideFbs;
+    force:bool;
+}
+
+table CommandFbs {
+	toSend:BooleanTypeFbs;
+	clientKey:int;
+	commandType:CommandTypeFbs;
+	timeoutNs:long;
+	parameters:[ParameterFbs];
+}
+
+table CommandAckFbs {
+	clientKey:int;
+	commandType:CommandTypeFbs;
+	ackType:CommandAckTypeFbs;
+}
+
+table EventValueFbs {
+	type:EventValueTypeFbs;
+	value:long;
+}
+
+table EventFbs {
+	sinkId:int;
+	time:long;
+	level:EventLevelFbs;
+    eventType:EventTypeFbs;
+	category:EventCategoryFbs;
+	values:[EventValueFbs];
+	description:string;
+}
+
+table ExchangeFbs {
+    sid:int;
+    code:string;
+}
+
+table HeartbeatFbs {
+    nanoOfDay:long;
+}
+
+table IssuerFbs {
+    sid:int;
+    code:string;
+}
+
+table AggregateOrderBookUpdateEntryFbs {
+    transactTime:long;
+    price:int;
+    tickLevel:int;
+    quantity:long;
+    numOrders:int;
+    entryType:EntryTypeFbs;
+    priceLevel:byte;
+    side:SideFbs;
+    updateAction:UpdateActionFbs;
+}
+
+table AggregateOrderBookUpdateFbs {
+    secSid:long;
+    seqNum:int;
+    isSnapshot:bool;
+    entries:[AggregateOrderBookUpdateEntryFbs];
+}
+
+table MessageFbs{
+    messagePayload:MessagePayloadFbs;   
+}
+
+table NewOrderRequestFbs {
+    clientKey:int;
+    secSid:long;
+    orderType:OrderTypeFbs;
+    quantity:int;
+    side:SideFbs;
+    tif:TimeInForceFbs;
+    isAlgoOrder:bool;
+    limitPrice:int;
+    stopPrice:int;
+    timeoutAt:long;
+    portSid:int;
+    retry:bool;
+}
+
+table OrderFbs {
+    channelId:int;
+    channelSnapshotSeq:long;
+    orderSid:int;
+    orderId:int;
+    secSid:long;
+    extId:string;
+    orderType:OrderTypeFbs;
+    quantity:int;
+    side:SideFbs;
+    tif:TimeInForceFbs;
+    createTime:long;
+    updateTime:long;
+    isAlgoOrder:bool;
+    limitPrice:int;
+    stopPrice:int;
+    status:OrderStatusFbs;
+    cumulativeQty:int;
+    leavesQty:int;
+    orderRejectType:OrderRejectTypeFbs;
+    reason:string;
+    parentOrderSid:int;
+}
+
+table OrderRequestAcceptedFbs {
+    clientKey:int;
+    orderSid:int;
+}
+        
+table OrderRequestCompletionFbs {
+    clientKey:int;
+    orderSid:int;
+    completionType:OrderRequestCompletionTypeFbs;
+    rejectType:OrderRequestRejectTypeFbs;
+    reason:string;
+}
+
+table ParameterFbs {
+	parameterType:ParameterTypeFbs;
+	parameterValue:string;
+	parameterValueLong:long;
+}
+
+table PositionFbs {
+	entitySid:long;
+	entityType:EntityTypeFbs;
+	openPosition:long;
+	openCallPosition:long;
+	openPutPosition:long;
+	buyQty:long;
+    buyNotional:double;
+	sellQty:long;
+    sellNotional:double;
+	osBuyQty:long;
+	osBuyNotional:double;
+	osSellQty:long;
+	osSellNotional:double;
+	capUsed:double;
+	maxCapUsed:double;
+	fees:double;
+	commission:double;
+	netRealizedPnl:double;
+	unrealizedPnl:double;
+	avgBuyPrice:double;
+	avgSellPrice:double;
+	mtmBuyPrice:double;
+	mtmSellPrice:double;
+	totalPnl:double;
+	tradeCount:int;
+    experimentalNetRealizedPnl:double;
+    experimentalUnrealizedPnl:double;
+    experimentalTotalPnl:double;
+}
+
+table RequestFbs {
+	clientKey:int;
+	toSend:bool;
+	requestType:RequestTypeFbs;
+	parameters:[ParameterFbs];
+}
+
+table ResponseFbs {
+	clientKey:int;
+	isLast:bool;
+	resultType:ResultTypeFbs;
+	messagePayload:MessagePayloadFbs;
+}
+
+table RiskStateDetailsFbs {
+	type:RiskControlTypeFbs;
+	current:double;
+	previous:double;
+	exceeded:bool;
+}
+
+table RiskStateFbs {
+	entityType:EntityTypeFbs;
+	entitySid:long;
+	details:[RiskStateDetailsFbs];
+}
+
+table RiskControlSettingFbs {
+	type:RiskControlTypeFbs;
+	value:double;
+}
+
+table RiskControlFbs {
+	entityType:EntityTypeFbs;
+	toAllEntity:bool;
+	specificEntitySid:long;
+	settings:[RiskControlSettingFbs];
+}
+
+table SecurityFbs {
+	sid:long;
+	exchangeSid:int;
+	code:string;
+	securityType:SecurityTypeFbs;
+	spreadTableCode:byte;
+	currency:string;
+	lotSize:int;
+	previousClosingPrice:int;
+	listingDate:int;
+	conversionRatio:int;
+	strikePrice:int;
+	maturity:int;
+	putOrCall:PutOrCallFbs;
+	style:OptionStyleFbs;
+	undSid:long;
+	issuerSid:int;
+    isAlgo:bool;
+}
+
+table ServiceStatusFbs {
+	systemId:byte;
+	sinkId:byte;
+	serviceType:ServiceTypeFbs;
+	serviceStatusType:ServiceStatusTypeFbs;
+	modifyTimeAtOrigin:long;
+	sentTime:long;
+	healthCheckTime:long;
+}
+
+table StrategyFieldFbs {
+	sid:int;
+	name:string;
+	source:StrategyParamSourceFbs;
+	type:StrategyParamSourceFbs;
+	readOnly:bool;
+}
+
+table StrategyTypeFbs {
+	sid:long;
+	name:string;
+	fields:[StrategyFieldFbs];
+}
+
+table StrategyStatusFbs {
+	secSid:long;
+	strategySid:long;
+	status:StrategyStatusTypeFbs;
+}
+
+table StrategyParamValueFbs {
+	fieldSid:int;
+	stringValue:string;
+	longValue:long;
+}
+
+table StrategyParametersFbs {
+	strategyId:long;
+	parameters:[StrategyParamValueFbs];
+}
+
+table StrategyUndParametersFbs {
+    strategyId:long;
+	underlyingSid:long;
+    parameters:[StrategyParamValueFbs];
+}
+
+table StrategyIssuerParametersFbs {
+    strategyId:long;
+    issuerSid:int;
+    parameters:[StrategyParamValueFbs];
+}
+
+table StrategyIssuerUndParametersFbs {
+    strategyId:long;
+    issuerSid:int;
+    undSid:long;
+    issuerUndSid:long;
+    parameters:[StrategyParamValueFbs];
+}
+
+table StrategyWrtParametersFbs {
+    strategyId:long;
+    secSid:long;
+    parameters:[StrategyParamValueFbs];
+}
+
+table StrategySwitchFbs {
+    senderSinkId:int;
+    switchType:StrategySwitchTypeFbs;
+	switchSource:StrategyParamSourceFbs;
+	sourceSid:long;
+	onOff:bool;
+}
+
+table TradeFbs {
+    channelId:int;
+    channelSnapshotSeq:long;
+    createTime:long;
+    updateTime:long;
+    tradeSid:int;
+    orderSid:int;
+    secSid:long;
+    side:SideFbs;
+    orderId:int;
+    status:OrderStatusFbs;
+    tradeStatus:TradeStatusFbs;
+    cumulativeQty:int;
+    leavesQty:int;
+    executionId:string;
+    executionQty:int;
+    executionPrice:int;
+}
+
+table OrderBookSnapshotEntryFbs {
+    price:int;
+    quantity:int;
+    tickLevel:int;
+}
+
+table OrderBookSnapshotFbs {
+    secSid:long;
+    seqNum:int;
+    transactTime:long;
+    bidDepth:[OrderBookSnapshotEntryFbs];
+    askDepth:[OrderBookSnapshotEntryFbs];
+}
+
+table VerifiedDoubleFbs {
+    value:double;
+    verified:bool;
+}
+
+table MarketStatsFbs {
+    secSid:long;
+    seqNum:int;
+    transactTime:long;
+    open:int;
+    high:int;
+    low:int;
+    close:int;
+    volume:int;
+    turnover:long;
+}
+
+table ScoreBoardSchemaFieldFbs {
+    fieldId:int;
+    fieldName:string;
+    fieldType:GenericFieldTypeFbs;
+}
+
+table ScoreBoardSchemaFbs {
+    fields:[ScoreBoardSchemaFieldFbs];
+}
+
+table ScoreBoardDetailFbs {
+    fieldId:int;
+    fieldValueLong:long;
+}
+
+table ScoreBoardFbs {
+    secSid:long;
+    score:int;
+    details:[ScoreBoardDetailFbs];
+}
+
+table NoteFbs {
+	noteSid:int;
+	entitySid:long;
+	createDate:int;
+    createTime:long;
+	updateDate:int;
+    updateTime:long;
+	isDeleted:bool;
+	isArchived:bool;
+	description:string;
+}
+
+table VolAtPriceFbs {
+    price: int;
+    bidQty: long;
+    askQty: long;
+    significant: bool;
+    volClusterType: VolumeClusterTypeFbs;
+}
+
+table ChartDataFbs {
+    secSid:long;
+    dataTime:long;
+    windowSizeInSec:int;
+    open:int;
+    high:int;
+    close:int;
+    low:int;
+    vwap:int;
+    valueAreaHigh:int;
+    valueAreaLow:int;
+    volClusterDirection:VolumeClusterDirectionTypeFbs;
+    volAtPrices:[VolAtPriceFbs];
+}
+
+root_type MessageFbs;
