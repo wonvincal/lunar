@@ -5,13 +5,13 @@ A comprehensive trading and backtesting system for various asset types including
 ## Project Structure
 
 ```
-dev/
-└── lunar/
-    ├── lunar-backtester/     # Backtesting engine and strategies
-    ├── lunar-core/           # Core trading functionality
-    ├── pyproject.toml        # Project configuration
-    ├── README.md             # This file
-    └── LICENSE               # MIT License
+lunar/
+├── lunar-backtester/     # Backtesting engine and strategies
+├── lunar-core/          # Core trading functionality
+├── lunar-trader/        # Live trading engine and strategies
+├── pyproject.toml       # Project configuration
+├── README.md            # This file
+└── LICENSE              # MIT License
 ```
 
 ## Features
@@ -28,6 +28,12 @@ dev/
 - Risk management
 - Portfolio tracking
 
+### Lunar Trader
+- Live trading engine
+- Strategy implementation framework
+- Real-time market data integration
+- Order execution and management
+
 ## Installation
 
 ### Using uv (Recommended)
@@ -36,11 +42,11 @@ dev/
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone the repository
-git clone https://github.com/yourusername/lunar.git
-cd dev/lunar
+git clone git@github.com:wonvincal/lunar.git
+cd lunar
 
-# Install the package
-uv pip install -e .
+# Install all packages in development mode
+uv pip install -e lunar-core/ -e lunar-backtester/ -e lunar-trader/
 
 # Install development dependencies
 uv pip install -e ".[dev]"
@@ -49,11 +55,11 @@ uv pip install -e ".[dev]"
 ### Using pip
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/lunar.git
-cd dev/lunar
+git clone git@github.com:wonvincal/lunar.git
+cd lunar
 
-# Install the package
-pip install -e .
+# Install all packages in development mode
+pip install -e lunar-core/ -e lunar-backtester/ -e lunar-trader/
 
 # Install development dependencies
 pip install -e ".[dev]"
@@ -63,7 +69,7 @@ pip install -e ".[dev]"
 
 ### Backtesting
 ```python
-from dev.lunar.backtester import BacktestEngine, OptionStrategy
+from lunar_backtester import BacktestEngine, OptionStrategy
 from datetime import datetime
 
 # Initialize backtest engine
@@ -83,9 +89,33 @@ result = engine.run(
 print(result.summary())
 ```
 
+### Live Trading
+```python
+from lunar_trader import TradingEngine, Strategy
+from lunar_core import MarketData, OrderManager
+
+# Initialize trading engine
+engine = TradingEngine()
+
+# Define strategy
+class MyStrategy(Strategy):
+    def __init__(self):
+        super().__init__()
+        self.market_data = MarketData()
+        self.order_manager = OrderManager()
+
+    async def on_market_data(self, data):
+        # Implement your trading logic here
+        pass
+
+# Run trading engine
+strategy = MyStrategy()
+engine.run(strategy)
+```
+
 ### Data Management
 ```python
-from dev.lunar.backtester import DatabaseManager, PolygonDataFetcher
+from lunar_backtester import DatabaseManager, PolygonDataFetcher
 from datetime import datetime
 
 # Initialize database manager
@@ -124,6 +154,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
+# Install all packages in development mode
+uv pip install -e lunar-core/ -e lunar-backtester/ -e lunar-trader/
+
 # Install development dependencies
 uv pip install -e ".[dev]"
 ```
@@ -134,19 +167,20 @@ uv pip install -e ".[dev]"
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
+# Install all packages in development mode
+pip install -e lunar-core/ -e lunar-backtester/ -e lunar-trader/
+
 # Install development dependencies
 pip install -e ".[dev]"
 ```
 
 ### Running Tests
 ```bash
-# Using uv
-uv pip install pytest pytest-cov
-pytest
+# Run tests for all packages
+pytest lunar-core/tests/ lunar-backtester/tests/ lunar-trader/tests/
 
-# Using pip
-pip install pytest pytest-cov
-pytest
+# Run tests with coverage
+pytest --cov=lunar_core --cov=lunar_backtester --cov=lunar_trader
 ```
 
 ### Code Formatting
