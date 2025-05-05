@@ -1,0 +1,10 @@
+2025-05-04T18:35:51.881818 [INFO] Trading engine initialized
+2025-05-04T18:35:51.882013 [INFO] Trading engine started
+2025-05-04T18:35:51.882077 [INFO] Starting market data simulation
+2025-05-04T18:35:52.883843 [INFO] [AAPL] Market data processed
+2025-05-04T18:35:53.885916 [INFO] [AAPL] Market data processed
+2025-05-04T18:35:54.887853 [INFO] [AAPL] Market data processed
+2025-05-04T18:35:55.889655 [INFO] [AAPL] Market data processed
+2025-05-04T18:35:56.891802 [INFO] [AAPL] Market data processed
+2025-05-04T18:35:56.892291 [INFO] Trading engine stopped
+2025-05-04T18:35:56.892455 [INFO] Trading simulation completed

@@ -1,0 +1,43 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    - name: Install dependencies
+      run: |
+        uv pip install --upgrade pip
+        uv pip install black isort flake8 mypy
+    
+    - name: Check formatting with black
+      run: |
+        black . --check
+    
+    - name: Check import sorting with isort
+      run: |
+        isort . --check-only
+    
+    - name: Check code style with flake8
+      run: |
+        flake8 .
+    
+    - name: Check types with mypy
+      run: |
+        mypy . 
