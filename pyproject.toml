@@ -1,7 +1,3 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "lunar"
 version = "0.1.0"
@@ -10,21 +6,30 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "Calvin Wong", email = "calvin.kl.wong@gmail.com" }
 ]
 dependencies = [
+    "aiohttp>=3.8.0",
     "pandas>=2.0.0",
     "numpy>=1.24.0",
     "pydantic>=2.0.0",
     "requests>=2.31.0",
+    "polygon-api-client>=1.12.0",
     "pyarrow>=14.0.0",
     "python-dateutil>=2.8.2",
+    "python-dotenv>=1.0.0",
+    "sqlalchemy>=2.0.0",
     "typing-extensions>=4.7.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.1.0",
     "black>=23.7.0",
     "isort>=5.12.0",
@@ -33,7 +38,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["lunar"]
+packages = ["src/core", "src/backtester", "src/trader"]
 
 [tool.black]
 line-length = 100
@@ -60,6 +65,10 @@ warn_no_return = true
 warn_unreachable = true
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "--cov=lunar --cov-report=term-missing" 
+#addopts = "--cov=core --cov=trader --cov-report=term-missing"
+addopts = "--cov=core --cov=backtester --cov=trader --cov-report=term-missing"
+filterwarnings = "ignore::DeprecationWarning"
+asyncio_default_fixture_loop_scope = "session"

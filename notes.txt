@@ -1,0 +1,22 @@
+uv pip install
+uv pip install -e lunar-core
+uv sync
+uv run pytest --verbose
+source .venv/bin/activate
+
+import sys
+sys.path.append("../common")
+import common
+
+
+Go to ~/dev/lunar/lunar-backtester
+soure .venv/bin/activate
+uv pip install /home/wongca/dev/lunar/lunar-core
+
+or
+
+uv add --editable ../lunar-core
+
+
+Prepare for test
+uv add --dev pytest
